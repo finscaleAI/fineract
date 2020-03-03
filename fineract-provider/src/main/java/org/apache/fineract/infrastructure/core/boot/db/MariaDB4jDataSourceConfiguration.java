@@ -18,45 +18,37 @@
  */
 package org.apache.fineract.infrastructure.core.boot.db;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
-import ch.vorburger.mariadb4j.springframework.MariaDB4jSpringService;
+import org.springframework.beans.factory.annotation.Autowired;
 
-@Configuration
-public class MariaDB4jDataSourceConfiguration extends DataSourceConfiguration {
+import ch.vorburger.exec.ManagedProcessException;
+import ch.vorburger.mariadb4j.DB;
 
-    @Bean
-    public MariaDB4jSetupService mariaDB4jSetUp() {
-        return new MariaDB4jSetupService(mariaDB4j().getDB());
+public class MariaDB4jSetupService {
+
+    private DB db;
+
+    @Autowired
+    public MariaDB4jSetupService(DB db) {
+        this.db = db;
     }
 
-    @Bean
-    public MariaDB4jSpringService mariaDB4j() {
-        MariaDB4jSpringService mariaDB4jSpringService = new MariaDB4jSpringService();
-        mariaDB4jSpringService.setDefaultBaseDir("build/db/bin");
-        mariaDB4jSpringService.setDefaultDataDir("build/db/data");
-        return mariaDB4jSpringService;
+    @PostConstruct
+    protected void setUpDBs() throws ManagedProcessException {
+        db.createDB(getTenantDBName());
+        db.createDB("mifostenant-default");
+        // Note that we don't need to initialize the DBs, because
+        // the TenantDatabaseUpgradeService will do this in just a moment.
     }
 
-    @Override
-    // NOT @Bean @Override dataSourceProperties() - doesn't work :(
-    protected DataSourceProperties getProperties() {
-        DataSourceProperties p = super.getProperties();
-        String dbName = mariaDB4jSetUp().getTenantDBName();
-        // Do not use p.setUrl(mariaDB4j().getConfiguration().getURL(dbName));
-        // Because TenantDataSourcePortFixService needs separate
-        // host/port/db/uid/pwd:
-        // (DataSourceProperties getUrl() creates the correct JDBC URL from it)
-        // This intentionally overrides any fineract.datasource.* settings, because
-        // in this configuration, logically the mariaDB4j settings take
-        // precedence:
-        p.setHost("localhost");
-        p.setPort(mariaDB4j().getConfiguration().getPort());
-        p.setDBName(dbName);
-        // TODO p.setUsername(mariaDB4j().getConfiguration().getUsername());
-        // TODO p.setPassword(mariaDB4j().getConfiguration().getPassword());
-        return p;
+    public String getTenantDBName() {
+        return "mifosplatform-tenants";
     }
 
+    @PreDestroy
+    protected void stop() throws ManagedProcessException {
+        db = null;
+    }
 }
