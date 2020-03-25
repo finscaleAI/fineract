@@ -19,11 +19,6 @@
 package org.apache.fineract.accounting.closure.service;
 
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
 import org.apache.fineract.accounting.closure.command.GLClosureCommand;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseBookingData;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseJournalEntryData;
@@ -46,6 +41,12 @@ import org.apache.fineract.organisation.office.service.OfficeReadPlatformService
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -124,7 +125,7 @@ public class CalculateIncomeAndExpenseBookingImpl implements CalculateIncomeAndE
         return incomeAndExpenseBookingCollection;
     }
 
-    private IncomeAndExpenseBookingData bookOffIncomeAndExpense(final List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList,
+    public IncomeAndExpenseBookingData bookOffIncomeAndExpense(final List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList,
                                                                 final GLClosureCommand closureData,final boolean preview,final GLAccount glAccount,final Office office){
         /* All running balances has to be calculated before booking off income and expense account */
         boolean isRunningBalanceCalculated = true;
