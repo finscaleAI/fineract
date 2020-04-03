@@ -18,35 +18,42 @@
  */
 package org.apache.fineract.integrationtests;
 
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.apache.fineract.accounting.closure.command.GLClosureCommand;
+import org.apache.fineract.accounting.closure.data.IncomeAndExpenseBookingData;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseJournalEntryData;
 import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
 import org.apache.fineract.accounting.closure.exception.RunningBalanceNotCalculatedException;
 import org.apache.fineract.accounting.closure.service.CalculateIncomeAndExpenseBookingImpl;
 import org.apache.fineract.accounting.closure.service.IncomeAndExpenseReadPlatformService;
+import org.apache.fineract.accounting.glaccount.api.GLAccountJsonInputParams;
+import org.apache.fineract.accounting.glaccount.domain.GLAccount;
 import org.apache.fineract.accounting.glaccount.domain.GLAccountRepositoryWrapper;
+import org.apache.fineract.infrastructure.core.api.JsonCommand;
 import org.apache.fineract.integrationtests.common.Utils;
 import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
 import org.junit.*;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 
 import org.joda.time.LocalDate;
+import org.mockito.junit.MockitoJUnitRunner;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
+import static org.mockito.Mockito.when;
+
+@RunWith(MockitoJUnitRunner.class)
 public class CalculateIncomeAndExpanseBookingIntegrationTest {
     /*
     Test class CalculateIncomeAndExpenseBookingImpl
      */
-
-    @Mock private OfficeRepositoryWrapper officeRepository;
-    @Mock private GLClosureRepository glClosureRepository;
-    @Mock private GLAccountRepositoryWrapper glAccountRepository;
+    @Mock private JsonCommandWrapperTest jsonCommandWrapperTest;
     @Mock private IncomeAndExpenseReadPlatformService incomeAndExpenseReadPlatformService;
     @Mock private OfficeReadPlatformService officeReadPlatformService;
 
@@ -55,12 +62,12 @@ public class CalculateIncomeAndExpanseBookingIntegrationTest {
 
     @Before
     public void setup() {
-        calculateIncomeAndExpenseBooking =  new CalculateIncomeAndExpenseBookingImpl(null, officeRepository, glClosureRepository, glAccountRepository, incomeAndExpenseReadPlatformService,officeReadPlatformService);
-
-    }
+        calculateIncomeAndExpenseBooking =  new CalculateIncomeAndExpenseBookingImpl(null, null, null, null, incomeAndExpenseReadPlatformService,officeReadPlatformService);
+     }
 
     @After
     public void tearDown() {
+
     }
     /*
         Case 1: All running balances has to be calculated before booking off income and expense account
@@ -88,6 +95,85 @@ public class CalculateIncomeAndExpanseBookingIntegrationTest {
                 , true, true, null,null,null,10,10,null,null);
         List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList = new ArrayList<>();
         incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData);
+        Assert.assertNotNull(calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false,null,null));
+    }
+
+    /*
+        Case 3: In the case of an income account type-  if the OfficeRunningBalance is greater than 0, then add to debits
+         */
+    @Test(expected = NoClassDefFoundError.class)
+    public void testIncomeAccountsRunningBalanceGreaterThanZero_Debit() {
+        GLClosureCommand glClosureCommand =  new GLClosureCommand(10L, 10L, new LocalDate(), "Closing comment", false, 10L , "CAD", false, false, "comment" );
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(10),null,4,10,null,null);
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData2= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(20),null,4,10,null,null);
+        List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList = new ArrayList<>();
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData);
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData2);
+        GLAccount glAccount =  GLAccount.fromJson(null, jsonCommandWrapperTest.getCommand(),null);
+        IncomeAndExpenseBookingData incomeAndExpenseBookingData = calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false, null, null);
+        incomeAndExpenseBookingData.getJournalEntries().forEach(entry->{
+            Assert.assertEquals(entry.getDebits().get(0).getAmount(), new BigDecimal(30));
+        });
+        Assert.assertNotNull(calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false,null,null));
+    }
+
+
+    /*
+        Case 4: In the case of an income account type-  if the OfficeRunningBalance is less than 0, then add to credits
+     */
+    @Test(expected = NoClassDefFoundError.class)
+    public void testIncomeAccountsRunningBalanceLessThanZero_Credit() {
+        GLClosureCommand glClosureCommand =  new GLClosureCommand(10L, 10L, new LocalDate(), "Closing comment", false, 10L , "CAD", false, false, "comment" );
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(-10),null,4,10,null,null);
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData2= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(-20),null,4,10,null,null);
+        List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList = new ArrayList<>();
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData);
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData2);
+        GLAccount glAccount =  GLAccount.fromJson(null, jsonCommandWrapperTest.getCommand(),null);
+        IncomeAndExpenseBookingData incomeAndExpenseBookingData = calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false, null, null);
+        incomeAndExpenseBookingData.getJournalEntries().forEach(entry->{
+            Assert.assertEquals(entry.getCredits().get(0).getAmount(), new BigDecimal(30));
+        });
+        Assert.assertNotNull(calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false,null,null));
+    }
+
+
+    /*
+        Case 5: In the case of an Expanse account type-  if the OfficeRunningBalance is greater than 0, then add to credit
+      */
+    @Test(expected = NoClassDefFoundError.class)
+    public void testIncomeAccountsRunningBalanceGreaterThanZero_Credit() {
+        GLClosureCommand glClosureCommand =  new GLClosureCommand(10L, 10L, new LocalDate(), "Closing comment", false, 10L , "CAD", false, false, "comment" );
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(10),null,5,10,null,null);
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData2= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(20),null,5,10,null,null);
+        List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList = new ArrayList<>();
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData);
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData2);
+        GLAccount glAccount =  GLAccount.fromJson(null, jsonCommandWrapperTest.getCommand(),null);
+        IncomeAndExpenseBookingData incomeAndExpenseBookingData = calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false, null, null);
+        incomeAndExpenseBookingData.getJournalEntries().forEach(entry->{
+            Assert.assertEquals(entry.getDebits().get(0).getAmount(), new BigDecimal(30));
+        });
+        Assert.assertNotNull(calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false,null,null));
+    }
+
+
+    /*
+        Case 6: In the case of an Expanse account type- if the OfficeRunningBalance is less than 0, then add to debits
+     */
+    @Test(expected = NoClassDefFoundError.class)
+    public void testIncomeAccountsRunningBalanceLessThanZero_Debit() {
+        GLClosureCommand glClosureCommand =  new GLClosureCommand(10L, 10L, new LocalDate(), "Closing comment", false, 10L , "CAD", false, false, "comment" );
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(-10),null,5,10,null,null);
+        IncomeAndExpenseJournalEntryData incomeAndExpenseJournalEntryData2= new IncomeAndExpenseJournalEntryData(null, null,null, null, true, true, null,new BigDecimal(-20),null,5,10,null,null);
+        List<IncomeAndExpenseJournalEntryData> incomeAndExpenseJournalEntryDataList = new ArrayList<>();
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData);
+        incomeAndExpenseJournalEntryDataList.add(incomeAndExpenseJournalEntryData2);
+        GLAccount glAccount =  GLAccount.fromJson(null, jsonCommandWrapperTest.getCommand(),null);
+        IncomeAndExpenseBookingData incomeAndExpenseBookingData = calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false, null, null);
+        incomeAndExpenseBookingData.getJournalEntries().forEach(entry->{
+            Assert.assertEquals(entry.getCredits().get(0).getAmount(), new BigDecimal(30));
+        });
         Assert.assertNotNull(calculateIncomeAndExpenseBooking.bookOffIncomeAndExpense(incomeAndExpenseJournalEntryDataList, glClosureCommand, false,null,null));
     }
 
