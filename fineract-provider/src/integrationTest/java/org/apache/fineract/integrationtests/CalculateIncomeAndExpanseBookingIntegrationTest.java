@@ -18,35 +18,27 @@
  */
 package org.apache.fineract.integrationtests;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
 import org.apache.fineract.accounting.closure.command.GLClosureCommand;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseBookingData;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseJournalEntryData;
-import org.apache.fineract.accounting.closure.domain.GLClosureRepository;
 import org.apache.fineract.accounting.closure.exception.RunningBalanceNotCalculatedException;
 import org.apache.fineract.accounting.closure.service.CalculateIncomeAndExpenseBookingImpl;
 import org.apache.fineract.accounting.closure.service.IncomeAndExpenseReadPlatformService;
-import org.apache.fineract.accounting.glaccount.api.GLAccountJsonInputParams;
 import org.apache.fineract.accounting.glaccount.domain.GLAccount;
-import org.apache.fineract.accounting.glaccount.domain.GLAccountRepositoryWrapper;
-import org.apache.fineract.infrastructure.core.api.JsonCommand;
-import org.apache.fineract.integrationtests.common.Utils;
-import org.apache.fineract.organisation.office.domain.OfficeRepositoryWrapper;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
-import org.junit.*;
+import org.joda.time.LocalDate;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-
-import org.joda.time.LocalDate;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalculateIncomeAndExpanseBookingIntegrationTest {
