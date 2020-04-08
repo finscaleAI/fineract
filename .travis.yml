@@ -33,6 +33,7 @@ addons:
     packages:
     # https://httpie.org is used by the docker-compose test below
     - httpie
+    - lynx
 
 before_install:
   - echo "USE mysql;\nUPDATE user SET password=PASSWORD('mysql') WHERE user='root';\nFLUSH PRIVILEGES;\n" | mysql -u root
@@ -50,6 +51,9 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
     - $HOME/.m2
+
+after_failure:
+  - if [ -f /home/travis/build/muellners/fineract/build/reports/rat/index.html ]; then lynx -dump /home/travis/build/muellners/fineract/build/reports/rat/index.html; fi
 
 # NOTE: We used to run with --info, which is quite a bit more verbose, but is VERY useful to understand failures on Travis,
 # where you do not have access to any files like build/reports/tests/index.html, only the Console.
