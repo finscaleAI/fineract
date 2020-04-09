@@ -39,13 +39,17 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalculateIncomeAndExpanseBookingIntegrationTest {
     /*
     Test class CalculateIncomeAndExpenseBookingImpl
      */
-    @Mock private JsonCommandWrapperTest jsonCommandWrapperTest;
+    @Mock
+    private JsonCommandWrapperTest jsonCommandWrapperTest;
     @Mock private IncomeAndExpenseReadPlatformService incomeAndExpenseReadPlatformService;
     @Mock private OfficeReadPlatformService officeReadPlatformService;
 
