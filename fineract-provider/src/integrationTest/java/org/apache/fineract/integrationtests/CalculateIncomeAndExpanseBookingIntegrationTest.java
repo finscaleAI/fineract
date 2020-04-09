@@ -16,8 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 package org.apache.fineract.integrationtests;
 
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import org.apache.fineract.accounting.closure.command.GLClosureCommand;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseBookingData;
 import org.apache.fineract.accounting.closure.data.IncomeAndExpenseJournalEntryData;
@@ -26,19 +31,14 @@ import org.apache.fineract.accounting.closure.service.CalculateIncomeAndExpenseB
 import org.apache.fineract.accounting.closure.service.IncomeAndExpenseReadPlatformService;
 import org.apache.fineract.accounting.glaccount.domain.GLAccount;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
+
 import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)
 public class CalculateIncomeAndExpanseBookingIntegrationTest {
