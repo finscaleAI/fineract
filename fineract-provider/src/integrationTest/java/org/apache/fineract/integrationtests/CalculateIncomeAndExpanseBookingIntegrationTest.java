@@ -31,14 +31,12 @@ import org.apache.fineract.accounting.closure.service.CalculateIncomeAndExpenseB
 import org.apache.fineract.accounting.closure.service.IncomeAndExpenseReadPlatformService;
 import org.apache.fineract.accounting.glaccount.domain.GLAccount;
 import org.apache.fineract.organisation.office.service.OfficeReadPlatformService;
-
 import org.joda.time.LocalDate;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
