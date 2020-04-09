@@ -16,10 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 package org.apache.fineract.integrationtests;
-
-
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,8 +43,7 @@ public class CalculateIncomeAndExpanseBookingIntegrationTest {
     /*
     Test class CalculateIncomeAndExpenseBookingImpl
      */
-    @Mock
-    private JsonCommandWrapperTest jsonCommandWrapperTest;
+    @Mock private JsonCommandWrapperTest jsonCommandWrapperTest;
     @Mock private IncomeAndExpenseReadPlatformService incomeAndExpenseReadPlatformService;
     @Mock private OfficeReadPlatformService officeReadPlatformService;
 
