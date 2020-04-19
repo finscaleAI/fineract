@@ -18,14 +18,19 @@
 --
 
 /* break-out center and group permissions from porfolio grouping */
+UPDATE
+    m_permission
+SET
+    `grouping` = "portfolio_center"
+WHERE
+    code LIKE '%center%'
+    AND `grouping` LIKE 'portfolio';
 
-update m_permission
-set `grouping` = "portfolio_center"
-where code like '%center%'
-and `grouping` like 'portfolio';
+UPDATE
+    m_permission
+SET
+    `grouping` = "portfolio_group"
+WHERE
+    code LIKE '%group%'
+    AND `grouping` LIKE 'portfolio';
 
-
-update m_permission
-set `grouping` = "portfolio_group"
-where code like '%group%'
-and `grouping` like 'portfolio';

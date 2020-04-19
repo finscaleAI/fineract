@@ -18,7 +18,10 @@
 --
 
 /* grouping is misspelt but also should be under accounting */
+UPDATE
+    m_permission
+SET
+    `grouping` = 'accounting'
+WHERE
+    `grouping` = 'organistion';
 
-update m_permission
-set `grouping` = 'accounting'
-where `grouping` = 'organistion';
