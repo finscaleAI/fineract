@@ -33,4 +33,3 @@ INSERT INTO m_permission (`grouping`, code, entity_name, action_name, can_maker_
 INSERT INTO m_permission (`grouping`, code, entity_name, action_name, can_maker_checker) VALUE ("authorisation", "UPDATE_PASSWORD_PREFERENCES", "PASSWORD_PREFERENCES", "UPDATE", 0);
 
 INSERT INTO m_permission (`grouping`, code, entity_name, action_name, can_maker_checker) VALUE ("authorisation", "UPDATE_PASSWORD_PREFERENCES_CHECKER", "PASSWORD_PREFERENCES", "UPDATE_CHECKER", 0);
-

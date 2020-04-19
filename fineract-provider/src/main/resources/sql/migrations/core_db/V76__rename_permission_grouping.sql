@@ -33,4 +33,3 @@ SET
 WHERE
     code LIKE '%group%'
     AND `grouping` LIKE 'portfolio';
-

@@ -24,4 +24,3 @@ SET
     `grouping` = 'accounting'
 WHERE
     `grouping` = 'organistion';
-

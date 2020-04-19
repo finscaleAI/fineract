@@ -19,4 +19,3 @@
 
 DELETE FROM m_permission
 WHERE `grouping` = 'transaction_deposit';
-

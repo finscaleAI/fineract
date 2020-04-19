@@ -103,4 +103,3 @@ UPDATE
     m_permission
 SET
     can_maker_checker = FALSE;
-

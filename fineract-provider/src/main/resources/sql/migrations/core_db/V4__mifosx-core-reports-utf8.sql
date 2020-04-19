@@ -38,4 +38,3 @@ SELECT
     FALSE
 FROM
     stretchy_report r;
-

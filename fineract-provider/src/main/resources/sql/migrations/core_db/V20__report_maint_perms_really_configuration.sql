@@ -23,4 +23,3 @@ SET
     `grouping` = 'configuration'
 WHERE
     entity_name = 'report';
-
