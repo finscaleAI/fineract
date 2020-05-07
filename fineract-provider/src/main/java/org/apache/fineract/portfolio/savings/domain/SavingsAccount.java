@@ -141,6 +141,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected Client client;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true)
     protected Group group;
@@ -155,6 +156,16 @@ public class SavingsAccount extends AbstractPersistableCustom {
     protected Group group;
 
 >>>>>>>
+=======
+    @ManyToOne(optional = true, fetch=FetchType.LAZY)
+    @JoinColumn(name = "group_id", nullable = true)
+    protected Group group;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name = "gsim_id", nullable = true)
+    private GroupSavingsIndividualMonitoring gsim;
+
+>>>>>>> Fixed Changes
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     protected SavingsProduct product;
@@ -1074,7 +1085,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
         }
     }
 
-
     public boolean isBeforeLastPostingPeriod(final LocalDate transactionDate) {
 
         boolean transactionBeforeLastInterestPosting = false;
@@ -1625,6 +1635,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
 <<<<<<< HEAD
+<<<<<<< HEAD
     public GroupSavingsIndividualMonitoring getGsim() {
         return gsim;
     }
@@ -1636,6 +1647,17 @@ public class SavingsAccount extends AbstractPersistableCustom {
 =======
 >>>>>>>
     public Long hasSavingsOfficerId() {
+=======
+    public GroupSavingsIndividualMonitoring getGsim() {
+          return gsim;
+     }
+
+     public void setGsim(GroupSavingsIndividualMonitoring gsim) {
+          this.gsim = gsim;
+     }
+
+     public Long hasSavingsOfficerId() {
+>>>>>>> Fixed Changes
         Long id = null;
         if (this.savingsOfficer != null) {
             id = this.savingsOfficer.getId();
@@ -2807,10 +2829,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return getActivationLocalDate() == null ? getSubmittedOnLocalDate() : getActivationLocalDate();
     }
 
-    public AccountType getAccountType() {
-        return AccountType.fromInt(accountType);
-    }
-
     public DepositAccountType depositAccountType() {
         return DepositAccountType.fromInt(depositType);
     }
@@ -3265,16 +3283,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return lastransactionDate;
     }
 
-    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
-        // TODO Make this functional
-        for (SavingsAccountCharge charge : this.charges()) {
-            if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
-                charge.updateDepositFeeAmount(transactionAmount);
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
-            }
-        }
-    }
-
     public BigDecimal getSavingsHoldAmount() {
         return this.savingsOnHoldAmount == null ? BigDecimal.ZERO : this.savingsOnHoldAmount;
     }
@@ -3287,22 +3295,32 @@ public class SavingsAccount extends AbstractPersistableCustom {
         this.savingsOnHoldAmount = getSavingsHoldAmount().subtract(amount);
     }
 
+    public AccountType getAccountType() {
+        return AccountType.fromInt(accountType);
+    }
+
+    public Integer getAccountTypes() {
+          return accountType;
+     }
+
+    public void setAccountType(Integer accountType) {
+          this.accountType = accountType;
+     }
+
     private boolean isOverdraft() {
             return allowOverdraft;
     }
 
-
-    public Integer getAccountTypes() {
-        return accountType;
+    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
+        // TODO Make this functional
+        for (SavingsAccountCharge charge : this.charges()) {
+            if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
+                charge.updateDepositFeeAmount(transactionAmount);
+                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+            }
+        }
     }
-
-    public void setAccountType(Integer accountType) {
-        this.accountType = accountType;
-    }
-
-    private boolean isOverdraft() {
-        return allowOverdraft;
-
+    
     /*
      * This method checks for the account  has Internal Transfer Charge Associated.
      * returns boolean
