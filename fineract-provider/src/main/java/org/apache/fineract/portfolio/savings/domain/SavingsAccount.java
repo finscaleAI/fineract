@@ -1082,15 +1082,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
         }
     }
 
-    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
-        // TODO Make this functional
-        for (SavingsAccountCharge charge : this.charges()) {
-            if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
-                charge.updateWithdralFeeAmount(transactionAmount);
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
-            }
-        }
-    }
 
     public boolean isBeforeLastPostingPeriod(final LocalDate transactionDate) {
 
