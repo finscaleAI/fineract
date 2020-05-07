@@ -222,7 +222,8 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
         populateDerivedFields(transactionAmount, chargeAmount);
 
-        if (this.isWithdrawalFee() || this.isSavingsNoActivity()) {
+        if (this.isWithdrawalFee()
+                || this.isSavingsNoActivity() || this.isOnInternalSavingsTransfer()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
 
@@ -655,6 +656,10 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return ChargeTimeType.fromInt(this.chargeTime).isOnSpecifiedDueDate();
     }
 
+    public boolean isOnInternalSavingsTransfer() {
+        return ChargeTimeType.fromInt(this.chargeTime).isSavingsInternalTransfer();
+    }
+
     public boolean isSavingsActivation() {
         return ChargeTimeType.fromInt(this.chargeTime).isSavingsActivation();
     }
@@ -736,8 +741,26 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return amountPaybale;
     }
 
+    public BigDecimal calculateDepositFeeAmount(@NotNull BigDecimal transactionAmount) {
+        BigDecimal amountPayable = BigDecimal.ZERO;
+        if (ChargeCalculationType.fromInt(this.chargeCalculation).isFlat()) {
+            amountPayable = this.amount;
+        } else if (ChargeCalculationType.fromInt(this.chargeCalculation).isPercentageOfAmount()) {
+            amountPayable = transactionAmount.multiply(this.percentage).divide(BigDecimal.valueOf(100L), MoneyHelper.getRoundingMode());
+        }
+        return amountPayable;
+    }
+
     public BigDecimal updateWithdralFeeAmount(final BigDecimal transactionAmount) {
         return amountOutstanding = calculateWithdralFeeAmount(transactionAmount);
+    }
+
+    public BigDecimal updateDepositFeeAmount(final BigDecimal transactionAmount) {
+        return amountOutstanding = calculateDepositFeeAmount(transactionAmount);
+    }
+
+    public BigDecimal updateInternalTransferFeeAmount(final BigDecimal transactionAmount) {
+        return amountOutstanding = calculateDepositFeeAmount(transactionAmount);
     }
 
     public void updateToNextDueDateFrom(final LocalDate startingDate) {

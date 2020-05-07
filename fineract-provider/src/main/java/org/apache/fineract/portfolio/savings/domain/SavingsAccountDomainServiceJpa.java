@@ -179,6 +179,12 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                     financialYearBeginningMonth, postInterestOnDate);
         }
         saveTransactionToGenerateTransactionId(deposit);
+        if (isAccountTransfer) {
+            if (account.hasInternalSavingsTransferCharge()) {
+                account.payDepositFee(transactionAmount, transactionDate, user);
+            }
+
+         }
 
         this.savingsAccountRepository.saveAndFlush(account);
 
