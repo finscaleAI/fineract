@@ -182,6 +182,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         if (isAccountTransfer) {
             if (account.hasInternalSavingsTransferCharge()) {
                 account.payDepositFee(transactionAmount, transactionDate, user);
+                // Once the fees is update the derived fields
             }
 
          }
