@@ -3320,7 +3320,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             }
         }
     }
-    
+
     /*
      * This method checks for the account  has Internal Transfer Charge Associated.
      * returns boolean
