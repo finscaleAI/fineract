@@ -140,6 +140,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
     @JoinColumn(name = "client_id", nullable = true)
     protected Client client;
 
+<<<<<<< HEAD
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true)
     protected Group group;
@@ -148,6 +149,12 @@ public class SavingsAccount extends AbstractPersistableCustom {
     @JoinColumn(name = "gsim_id", nullable = true)
     private GroupSavingsIndividualMonitoring gsim;
 
+=======
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "group_id", nullable = true)
+    protected Group group;
+
+>>>>>>>
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     protected SavingsProduct product;
@@ -1075,6 +1082,16 @@ public class SavingsAccount extends AbstractPersistableCustom {
         }
     }
 
+    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
+        // TODO Make this functional
+        for (SavingsAccountCharge charge : this.charges()) {
+            if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
+                charge.updateWithdralFeeAmount(transactionAmount);
+                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+            }
+        }
+    }
+
     public boolean isBeforeLastPostingPeriod(final LocalDate transactionDate) {
 
         boolean transactionBeforeLastInterestPosting = false;
@@ -1628,6 +1645,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return id;
     }
 
+<<<<<<< HEAD
     public GroupSavingsIndividualMonitoring getGsim() {
         return gsim;
     }
@@ -1636,6 +1654,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
         this.gsim = gsim;
     }
 
+=======
+>>>>>>>
     public Long hasSavingsOfficerId() {
         Long id = null;
         if (this.savingsOfficer != null) {
@@ -2809,6 +2829,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return getActivationLocalDate() == null ? getSubmittedOnLocalDate() : getActivationLocalDate();
     }
 
+    public AccountType getAccountType() {
+        return AccountType.fromInt(accountType);
+    }
+
     public DepositAccountType depositAccountType() {
         return DepositAccountType.fromInt(depositType);
     }
@@ -3263,6 +3287,16 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return lastransactionDate;
     }
 
+    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
+        // TODO Make this functional
+        for (SavingsAccountCharge charge : this.charges()) {
+            if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
+                charge.updateDepositFeeAmount(transactionAmount);
+                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+            }
+        }
+    }
+
     public BigDecimal getSavingsHoldAmount() {
         return this.savingsOnHoldAmount == null ? BigDecimal.ZERO : this.savingsOnHoldAmount;
     }
@@ -3275,9 +3309,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
         this.savingsOnHoldAmount = getSavingsHoldAmount().subtract(amount);
     }
 
-    public AccountType getAccountType() {
-        return AccountType.fromInt(accountType);
+    private boolean isOverdraft() {
+            return allowOverdraft;
     }
+
 
     public Integer getAccountTypes() {
         return accountType;
@@ -3289,5 +3324,44 @@ public class SavingsAccount extends AbstractPersistableCustom {
 
     private boolean isOverdraft() {
         return allowOverdraft;
+
+    /*
+     * This method checks for the account  has Internal Transfer Charge Associated.
+     * returns boolean
+     */
+    public boolean hasInternalSavingsTransferCharge() {
+        if (this.charges.isEmpty()) return false;
+        return this.charges.stream()
+        .anyMatch(i -> i.isOnInternalSavingsTransfer());
+
+    }
+
+    /**
+     * This return the amount associated to the internal savings charge
+     * @return BigDecimal amount
+     */
+
+    public BigDecimal getInternalSavingsTransferAmount() {
+        return this.charges.stream()
+                .filter(i -> i.isOnInternalSavingsTransfer())
+                .findFirst()
+                .get().getCharge().getAmount();
+    }
+
+    public SavingsAccountCharge getSavingsAccountCharge() {
+        return this.charges.stream()
+                .filter(i -> i.isOnInternalSavingsTransfer())
+                .findFirst()
+                .get();
+    }
+
+    public BigDecimal calculateAmountApplied(BigDecimal amount, BigDecimal percent) {
+        return  amount.multiply(percent).divide(BigDecimal.valueOf(100L), MoneyHelper.getMathContext());
+
+    }
+
+    public BigDecimal getChargeAmountForInternalTransfer(BigDecimal amount, BigDecimal percent) {
+        return  amount.multiply(percent).divide(BigDecimal.valueOf(100L), MoneyHelper.getMathContext());
+
     }
 }

@@ -45,6 +45,10 @@ public class ChargeEnumerations {
                 optionData = new EnumOptionData(ChargeTimeType.SAVINGS_ACTIVATION.getValue().longValue(),
                         ChargeTimeType.SAVINGS_ACTIVATION.getCode(), "Savings Activation");
             break;
+            case SAVINGS_INTERNAL_TRANSFER:
+                optionData = new EnumOptionData(ChargeTimeType.SAVINGS_INTERNAL_TRANSFER.getValue().longValue(),
+                        ChargeTimeType.SAVINGS_INTERNAL_TRANSFER.getCode(), "Savings Internal Transfer");
+            break;
             case SAVINGS_CLOSURE:
                 optionData = new EnumOptionData(ChargeTimeType.SAVINGS_CLOSURE.getValue().longValue(),
                         ChargeTimeType.SAVINGS_CLOSURE.getCode(), "Savings Closure");
