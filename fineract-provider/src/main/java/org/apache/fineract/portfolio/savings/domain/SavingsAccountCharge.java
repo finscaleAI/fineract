@@ -320,6 +320,10 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         if (this.isWithdrawalFee()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
+
+        if (this.isOnInternalSavingsTransfer()) {
+            this.amountOutstanding = BigDecimal.ZERO;
+        }
         // to reset amount outstanding for annual and monthly fee
         resetPropertiesForRecurringFees();
         updateToPreviousDueDate();// reset annual and monthly due date.
@@ -750,10 +754,6 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
     public BigDecimal updateWithdralFeeAmount(final BigDecimal transactionAmount) {
         return amountOutstanding = calculateWithdralFeeAmount(transactionAmount);
-    }
-
-    public BigDecimal updateDepositFeeAmount(final BigDecimal transactionAmount) {
-        return amountOutstanding = calculateDepositFeeAmount(transactionAmount);
     }
 
     public BigDecimal updateInternalTransferFeeAmount(final BigDecimal transactionAmount) {

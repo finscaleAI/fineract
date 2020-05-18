@@ -181,8 +181,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         saveTransactionToGenerateTransactionId(deposit);
         if (isAccountTransfer) {
             if (account.hasInternalSavingsTransferCharge()) {
-                account.payDepositFee(transactionAmount, transactionDate, user);
-                // Once the fees is update the derived fields
+                account.payInternalTransferFee(transactionAmount, transactionDate, user);
             }
 
          }

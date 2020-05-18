@@ -140,8 +140,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
     @JoinColumn(name = "client_id", nullable = true)
     protected Client client;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "group_id", nullable = true)
     protected Group group;
@@ -150,22 +148,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
     @JoinColumn(name = "gsim_id", nullable = true)
     private GroupSavingsIndividualMonitoring gsim;
 
-=======
-    @ManyToOne(optional = true)
-    @JoinColumn(name = "group_id", nullable = true)
-    protected Group group;
-
->>>>>>>
-=======
-    @ManyToOne(optional = true, fetch=FetchType.LAZY)
-    @JoinColumn(name = "group_id", nullable = true)
-    protected Group group;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name = "gsim_id", nullable = true)
-    private GroupSavingsIndividualMonitoring gsim;
-
->>>>>>> Fixed Changes
     @ManyToOne
     @JoinColumn(name = "product_id", nullable = false)
     protected SavingsProduct product;
@@ -2773,7 +2755,10 @@ public class SavingsAccount extends AbstractPersistableCustom {
             chargeTransaction = SavingsAccountTransaction.withdrawalFee(this, office(), transactionDate, transactionAmount, user);
         } else if (savingsAccountCharge.isAnnualFee()) {
             chargeTransaction = SavingsAccountTransaction.annualFee(this, office(), transactionDate, transactionAmount, user);
-        } else {
+        } else if (savingsAccountCharge.isOnInternalSavingsTransfer()) {
+            chargeTransaction = SavingsAccountTransaction.internalTransferFee(this, office(), transactionDate, transactionAmount, user);
+        }
+        else {
             chargeTransaction = SavingsAccountTransaction.charge(this, office(), transactionDate, transactionAmount, user);
         }
 
@@ -3324,13 +3309,12 @@ public class SavingsAccount extends AbstractPersistableCustom {
             return allowOverdraft;
     }
 
-    public void payDepositFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
+    public void payInternalTransferFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
         // TODO Make this functional
         for (SavingsAccountCharge charge : this.charges()) {
             if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
-                charge.updateDepositFeeAmount(transactionAmount);
+                charge.updateInternalTransferFeeAmount(transactionAmount);
                 this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
-                // Once the payment is done please update the summary
                 this.summary.updateSummary(this.currency, this.savingsAccountTransactionSummaryWrapper, this.transactions);
             }
         }
@@ -3364,15 +3348,5 @@ public class SavingsAccount extends AbstractPersistableCustom {
                 .filter(i -> i.isOnInternalSavingsTransfer())
                 .findFirst()
                 .get();
-    }
-
-    public BigDecimal calculateAmountApplied(BigDecimal amount, BigDecimal percent) {
-        return  amount.multiply(percent).divide(BigDecimal.valueOf(100L), MoneyHelper.getMathContext());
-
-    }
-
-    public BigDecimal getChargeAmountForInternalTransfer(BigDecimal amount, BigDecimal percent) {
-        return  amount.multiply(percent).divide(BigDecimal.valueOf(100L), MoneyHelper.getMathContext());
-
     }
 }
