@@ -183,6 +183,14 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
                 isReversed, appUser, isManualTransaction);
     }
 
+    public static SavingsAccountTransaction internalTransferFee(final SavingsAccount savingsAccount, final Office office, final LocalDate date,
+            final Money amount , final AppUser appUser) {
+        final boolean isReversed = false;
+        final boolean isManualTransaction = false;
+        return new SavingsAccountTransaction(savingsAccount, office, SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue(), date,
+                amount, isReversed, appUser, isManualTransaction);
+    }
+
     public static SavingsAccountTransaction annualFee(final SavingsAccount savingsAccount, final Office office, final LocalDate date,
             final Money amount, final AppUser appUser) {
         final boolean isReversed = false;
@@ -687,6 +695,10 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
         return (isPayCharge() && chargePaidBy != null) ? chargePaidBy.isFeeCharge() : false;
     }
 
+    public boolean isInternalTransaferCharge() {
+        return SavingsAccountTransactionType.fromInt(this.typeOf).isInternalTransferFee();
+    }
+
     public boolean isPenaltyCharge() {
         final SavingsAccountChargePaidBy chargePaidBy = getSavingsAccountChargePaidBy();
         return (isPayCharge() && chargePaidBy != null) ? chargePaidBy.isPenaltyCharge() : false;
@@ -694,6 +706,10 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
 
     public boolean isFeeChargeAndNotReversed() {
         return isFeeCharge() && isNotReversed();
+    }
+
+    public boolean isFeeChargeisInternTransfer() {
+        return isInternalTransaferCharge() && isNotReversed();
     }
 
     public boolean isPenaltyChargeAndNotReversed() {
