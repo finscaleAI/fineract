@@ -20,6 +20,7 @@ package org.apache.fineract.portfolio.savings.data;
 
 import java.io.Serializable;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
+import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 
 /**
  * Immutable data object represent savings account transaction type enumerations.
@@ -57,7 +58,8 @@ public class SavingsAccountTransactionEnumData implements Serializable {
         this.interestPosting = Long.valueOf(SavingsAccountTransactionType.INTEREST_POSTING.getValue()).equals(this.id);
         this.feeDeduction = Long.valueOf(SavingsAccountTransactionType.ANNUAL_FEE.getValue()).equals(this.id)
                 || Long.valueOf(SavingsAccountTransactionType.WITHDRAWAL_FEE.getValue()).equals(this.id)
-                || Long.valueOf(SavingsAccountTransactionType.PAY_CHARGE.getValue()).equals(this.id);
+                || Long.valueOf(SavingsAccountTransactionType.PAY_CHARGE.getValue()).equals(this.id)
+                || Long.valueOf(SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue()).equals(this.id);
         this.initiateTransfer = Long.valueOf(SavingsAccountTransactionType.INITIATE_TRANSFER.getValue()).equals(this.id);
         this.approveTransfer = Long.valueOf(SavingsAccountTransactionType.APPROVE_TRANSFER.getValue()).equals(this.id);
         this.withdrawTransfer = Long.valueOf(SavingsAccountTransactionType.WITHDRAW_TRANSFER.getValue()).equals(this.id);

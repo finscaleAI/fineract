@@ -1168,8 +1168,8 @@ public class AccountingProcessorHelper {
         if (accountMappingTypeId == CashAccountsForSavings.INCOME_FROM_FEES.getValue()
                 || accountMappingTypeId == CashAccountsForLoan.INCOME_FROM_PENALTIES.getValue()) {
             final ProductToGLAccountMapping chargeSpecificIncomeAccountMapping = this.accountMappingRepository
-                    .findProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(savingsProductId, PortfolioProductType.SAVING.getValue(),
-                            accountMappingTypeId, chargeId);
+                    .findProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(savingsProductId,
+                            PortfolioProductType.SAVING.getValue(), accountMappingTypeId, chargeId);
             if (chargeSpecificIncomeAccountMapping != null) {
                 accountMapping = chargeSpecificIncomeAccountMapping;
             }
