@@ -321,8 +321,8 @@ public class ProductToGLAccountMappingReadPlatformServiceImpl implements Product
             final GLAccountData gLAccountData = new GLAccountData(glAccountId, glAccountName, glCode);
             final Long chargeId = (Long) chargeToIncomeAccountMap.get("chargeId");
             final String chargeName = (String) chargeToIncomeAccountMap.get("chargeName");
-            final Boolean penalty1 = (Boolean) chargeToIncomeAccountMap.get("penalty");
-            final ChargeData chargeData = ChargeData.lookup(chargeId, chargeName, penalty1);
+            final Boolean penalty_value = (Boolean) chargeToIncomeAccountMap.get("penalty");
+            final ChargeData chargeData = ChargeData.lookup(chargeId, chargeName, penalty_value, false);
             final ChargeToGLAccountMapper chargeToGLAccountMapper = new ChargeToGLAccountMapper(chargeData, gLAccountData);
             chargeToGLAccountMappers.add(chargeToGLAccountMapper);
         }

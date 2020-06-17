@@ -35,6 +35,7 @@ import org.apache.fineract.organisation.monetary.data.CurrencyData;
 import org.apache.fineract.portfolio.charge.data.ChargeData;
 import org.apache.fineract.portfolio.charge.service.ChargeDropdownReadPlatformService;
 import org.apache.fineract.portfolio.charge.service.ChargeEnumerations;
+import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
 import org.apache.fineract.portfolio.common.service.DropdownReadPlatformService;
 import org.apache.fineract.portfolio.loanaccount.data.LoanChargeData;
 import org.apache.fineract.portfolio.loanaccount.data.LoanChargePaidByData;
@@ -54,15 +55,17 @@ public class LoanChargeReadPlatformServiceImpl implements LoanChargeReadPlatform
     private final PlatformSecurityContext context;
     private final ChargeDropdownReadPlatformService chargeDropdownReadPlatformService;
     private final DropdownReadPlatformService dropdownReadPlatformService;
+    private final ChargeReadPlatformService chargeReadPlatformService;
 
     @Autowired
     public LoanChargeReadPlatformServiceImpl(final PlatformSecurityContext context,
             final ChargeDropdownReadPlatformService chargeDropdownReadPlatformService, final RoutingDataSource dataSource,
-            final DropdownReadPlatformService dropdownReadPlatformService) {
+            final DropdownReadPlatformService dropdownReadPlatformService, final ChargeReadPlatformService chargeReadPlatformService) {
         this.context = context;
         this.chargeDropdownReadPlatformService = chargeDropdownReadPlatformService;
         this.jdbcTemplate = new JdbcTemplate(dataSource);
         this.dropdownReadPlatformService = dropdownReadPlatformService;
+        this.chargeReadPlatformService = chargeReadPlatformService;
     }
 
     private static final class LoanChargeMapper implements RowMapper<LoanChargeData> {
@@ -159,10 +162,11 @@ public class LoanChargeReadPlatformServiceImpl implements LoanChargeReadPlatform
         final List<EnumOptionData> shareChargeCalculationTypeOptions = null;
         final List<EnumOptionData> shareChargeTimeTypeOptions = null;
         final Collection<TaxGroupData> taxGroupOptions = null;
+        final Collection<ChargeData> subCharges = this.chargeReadPlatformService.retrieveNotParentCharges();
         return ChargeData.template(null, allowedChargeCalculationTypeOptions, null, allowedChargeTimeOptions, null,
                 loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions, savingsChargeCalculationTypeOptions,
                 savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions, clientChargeTimeTypeOptions, feeFrequencyOptions,
-                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions);
+                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions, subCharges);
     }
 
     @Override

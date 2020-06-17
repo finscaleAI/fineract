@@ -54,7 +54,7 @@ public final class ChargeDefinitionCommandFromApiJsonDeserializer {
     private final Set<String> supportedParameters = new HashSet<>(Arrays.asList("name", "amount", "locale", "currencyCode",
             "currencyOptions", "chargeAppliesTo", "chargeTimeType", "chargeCalculationType", "chargeCalculationTypeOptions", "penalty",
             "active", "chargePaymentMode", "feeOnMonthDay", "feeInterval", "monthDayFormat", "minCap", "maxCap", "feeFrequency",
-            ChargesApiConstants.glAccountIdParamName, ChargesApiConstants.taxGroupIdParamName));
+            ChargesApiConstants.glAccountIdParamName, ChargesApiConstants.taxGroupIdParamName, "subCharges"));
 
     private final FromJsonHelper fromApiJsonHelper;
 
@@ -81,6 +81,9 @@ public final class ChargeDefinitionCommandFromApiJsonDeserializer {
         if (chargeAppliesTo != null) {
             baseDataValidator.reset().parameter("chargeAppliesTo").value(chargeAppliesTo).isOneOfTheseValues(ChargeAppliesTo.validValues());
         }
+        final Long parentId = this.fromApiJsonHelper.extractLongNamed("parentId", element);
+        baseDataValidator.reset().parameter(ChargesApiConstants.parentID).value(parentId).ignoreIfNull()
+          .integerGreaterThanZero();
 
         final Integer chargeCalculationType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed("chargeCalculationType", element);
         baseDataValidator.reset().parameter("chargeCalculationType").value(chargeCalculationType).notNull();
@@ -93,6 +96,12 @@ public final class ChargeDefinitionCommandFromApiJsonDeserializer {
 
         if (feeFrequency != null) {
             baseDataValidator.reset().parameter("feeInterval").value(feeInterval).notNull();
+        }
+
+        if (this.fromApiJsonHelper.parameterExists("subCharges", element)) {
+          // We know that subCharges exist then we extract them.
+          String[] subCharges = this.fromApiJsonHelper.extractArrayNamed("subCharges", element);
+          baseDataValidator.reset().parameter("subCharges").value(subCharges).arrayNotEmpty();
         }
 
         final ChargeAppliesTo appliesTo = ChargeAppliesTo.fromInt(chargeAppliesTo);
