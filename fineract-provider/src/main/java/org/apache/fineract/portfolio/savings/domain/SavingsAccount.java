@@ -1628,8 +1628,6 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return id;
     }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
     public GroupSavingsIndividualMonitoring getGsim() {
         return gsim;
     }
@@ -1638,21 +1636,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
         this.gsim = gsim;
     }
 
-=======
->>>>>>>
     public Long hasSavingsOfficerId() {
-=======
-    public GroupSavingsIndividualMonitoring getGsim() {
-          return gsim;
-     }
-
-     public void setGsim(GroupSavingsIndividualMonitoring gsim) {
-          this.gsim = gsim;
-     }
-
-     public Long hasSavingsOfficerId() {
->>>>>>> Fixed Changes
-        Long id = null;
+       Long id = null;
         if (this.savingsOfficer != null) {
             id = this.savingsOfficer.getId();
         }
