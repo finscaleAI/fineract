@@ -184,7 +184,7 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                 // We need to check if there are subCharges Associated to it
                 // We need to make sure we pay the subCharges after the parent
                 // Charges
-                account.payInternalTransferFee(deposit,transactionAmount, transactionDate, user);
+                account.payInternalTransferFee(deposit, transactionAmount, transactionDate, user);
                 deposit.setParent(true);
             }
 

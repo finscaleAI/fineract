@@ -54,10 +54,9 @@ public final class SavingsAccountTransactionData implements Serializable {
     private final String submittedByUsername;
     private final String note;
 
-    private  boolean isParent;
+    private boolean isParent;
 
     private Collection<SavingsAccountTransactionData> subTransactions;
-
 
     // templates
     final Collection<PaymentTypeData> paymentTypeOptions;
@@ -194,7 +193,8 @@ public final class SavingsAccountTransactionData implements Serializable {
             final PaymentDetailData paymentDetailData, final Long savingsId, final String savingsAccountNo, final LocalDate date,
             final CurrencyData currency, final BigDecimal amount, final BigDecimal outstandingChargeAmount, final BigDecimal runningBalance,
             final boolean reversed, final AccountTransferData transfer, final Collection<PaymentTypeData> paymentTypeOptions,
-            final LocalDate submittedOnDate, final boolean interestedPostedAsOn, final String submittedByUsername, final String note, final boolean isParent) {
+            final LocalDate submittedOnDate, final boolean interestedPostedAsOn, final String submittedByUsername, final String note,
+            final boolean isParent) {
         this.id = id;
         this.transactionType = transactionType;
         this.paymentDetailData = paymentDetailData;
@@ -233,14 +233,14 @@ public final class SavingsAccountTransactionData implements Serializable {
     }
 
     public boolean isParent() {
-      return isParent;
+        return isParent;
     }
 
     public Long getId() {
-      return id;
+        return id;
     }
 
     public void setSubTransactions(Collection<SavingsAccountTransactionData> subTransactions) {
-      this.subTransactions = subTransactions;
+        this.subTransactions = subTransactions;
     }
 }

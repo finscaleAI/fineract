@@ -757,23 +757,23 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         final String sql = "select " + this.transactionsMapper.schema()
                 + " where sa.id = ? and sa.deposit_type_enum = ? order by tr.transaction_date DESC, tr.created_date DESC, tr.id DESC";
 
-      List<SavingsAccountTransactionData> transc = this.jdbcTemplate.query(sql, this.transactionsMapper, new Object[]{savingsId, depositAccountType.getValue()});
-      for (SavingsAccountTransactionData trans: transc){
-        if (trans.isParent()){
-          // Then we have subTransactions
-          // We use the read service to fetch the subTransactions
-          Collection<SavingsAccountTransactionData> subTrans = this.retrieveSubTransactions(trans.getId());
-          trans.setSubTransactions(subTrans);
+        List<SavingsAccountTransactionData> transc = this.jdbcTemplate.query(sql, this.transactionsMapper,
+                new Object[] { savingsId, depositAccountType.getValue() });
+        for (SavingsAccountTransactionData trans : transc) {
+            if (trans.isParent()) {
+                // Then we have subTransactions
+                // We use the read service to fetch the subTransactions
+                Collection<SavingsAccountTransactionData> subTrans = this.retrieveSubTransactions(trans.getId());
+                trans.setSubTransactions(subTrans);
+            }
         }
-      }
-      return transc;
+        return transc;
     }
 
     @Override
-    public Collection<SavingsAccountTransactionData> retrieveSubTransactions(final Long parentId){
-      final String sql = "select " + this.transactionsMapper.schema()
-        + " where tr.parent_id = ?";
-      return this.jdbcTemplate.query(sql,this.transactionsMapper, new Object[] {parentId});
+    public Collection<SavingsAccountTransactionData> retrieveSubTransactions(final Long parentId) {
+        final String sql = "select " + this.transactionsMapper.schema() + " where tr.parent_id = ?";
+        return this.jdbcTemplate.query(sql, this.transactionsMapper, new Object[] { parentId });
     }
 
     @Override
