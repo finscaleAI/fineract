@@ -200,15 +200,12 @@ public class SavingsEnumerations {
             case AMOUNT_RELEASE:
                 optionData = new SavingsAccountTransactionEnumData(SavingsAccountTransactionType.AMOUNT_RELEASE.getValue().longValue(),
                         SavingsAccountTransactionType.AMOUNT_RELEASE.getCode(), "Release Amount");
-<<<<<<< HEAD
             break;
-=======
-                break;
             case INTERNAL_TRANSFER_FEE:
-                optionData = new SavingsAccountTransactionEnumData(SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue().longValue(),
+                optionData = new SavingsAccountTransactionEnumData(
+                        SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue().longValue(),
                         SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getCode(), "Internal Savings Transfer");
-                break;
->>>>>>> Fix the Undo Transactions
+            break;
         }
         return optionData;
     }

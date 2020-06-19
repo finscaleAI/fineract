@@ -102,7 +102,7 @@ public class ChargesHelper {
     }
 
     public static String getSavingsInternalTransferFeeJSON() {
-      return getSavingsJSON(amount, currencyCode, ChargeTimeType.SAVINGS_INTERNAL_TRANSFER);
+        return getSavingsJSON(AMOUNT, CURRENCY_CODE, ChargeTimeType.SAVINGS_INTERNAL_TRANSFER);
     }
 
     public static String getSavingsJSON(String amount, String currencyCode, ChargeTimeType timeType) {

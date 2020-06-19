@@ -183,8 +183,8 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
                 isReversed, appUser, isManualTransaction);
     }
 
-    public static SavingsAccountTransaction internalTransferFee(final SavingsAccount savingsAccount, final Office office, final LocalDate date,
-            final Money amount , final AppUser appUser) {
+    public static SavingsAccountTransaction internalTransferFee(final SavingsAccount savingsAccount, final Office office,
+            final LocalDate date, final Money amount, final AppUser appUser) {
         final boolean isReversed = false;
         final boolean isManualTransaction = false;
         return new SavingsAccountTransaction(savingsAccount, office, SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue(), date,

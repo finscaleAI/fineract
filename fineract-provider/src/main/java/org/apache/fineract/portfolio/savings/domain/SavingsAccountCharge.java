@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -222,8 +223,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
         populateDerivedFields(transactionAmount, chargeAmount);
 
-        if (this.isWithdrawalFee()
-                || this.isSavingsNoActivity() || this.isOnInternalSavingsTransfer()) {
+        if (this.isWithdrawalFee() || this.isSavingsNoActivity() || this.isOnInternalSavingsTransfer()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
 
@@ -650,6 +650,10 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
     public Charge getCharge() {
         return this.charge;
+    }
+
+    public List<Charge> getSubCharges() {
+        return this.charge.getSubCharges();
     }
 
     public SavingsAccount savingsAccount() {

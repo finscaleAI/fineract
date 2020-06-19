@@ -19,20 +19,19 @@
 package org.apache.fineract.portfolio.charge.domain;
 
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Objects;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
-import javax.persistence.ManyToOne;
-import javax.persistence.JoinColumn;
-import javax.persistence.Column;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-
 import org.apache.fineract.accounting.glaccount.data.GLAccountData;
 import org.apache.fineract.accounting.glaccount.domain.GLAccount;
 import org.apache.fineract.infrastructure.core.api.JsonCommand;
@@ -123,8 +122,6 @@ public class Charge extends AbstractPersistableCustom {
     @JoinColumn(name = "parent_id")
     private List<Charge> subCharges = new ArrayList<>();
 
-
-
     public static Charge fromJson(final JsonCommand command, final GLAccount account, final TaxGroup taxGroup) {
         final String name = command.stringValueOfParameterNamed("name");
         final BigDecimal amount = command.bigDecimalValueOfParameterNamed("amount");
@@ -150,16 +147,15 @@ public class Charge extends AbstractPersistableCustom {
             isParent = true;
         }
         return new Charge(name, amount, currencyCode, chargeAppliesTo, chargeTimeType, chargeCalculationType, penalty, active, paymentMode,
-                feeOnMonthDay, feeInterval, minCap, maxCap, feeFrequency, account, taxGroup,isParent );
+                feeOnMonthDay, feeInterval, minCap, maxCap, feeFrequency, account, taxGroup, isParent);
     }
 
     protected Charge() {}
 
     private Charge(final String name, final BigDecimal amount, final String currencyCode, final ChargeAppliesTo chargeAppliesTo,
-            final ChargeTimeType chargeTime, final ChargeCalculationType chargeCalculationType, final boolean penalty,
-            final boolean active, final ChargePaymentMode paymentMode, final MonthDay feeOnMonthDay, final Integer feeInterval,
-            final BigDecimal minCap, final BigDecimal maxCap, final Integer feeFrequency, final GLAccount account, final TaxGroup taxGroup,
-                   final boolean isParent) {
+            final ChargeTimeType chargeTime, final ChargeCalculationType chargeCalculationType, final boolean penalty, final boolean active,
+            final ChargePaymentMode paymentMode, final MonthDay feeOnMonthDay, final Integer feeInterval, final BigDecimal minCap,
+            final BigDecimal maxCap, final Integer feeFrequency, final GLAccount account, final TaxGroup taxGroup, final boolean isParent) {
         this.name = name;
         this.amount = amount;
         this.currencyCode = currencyCode;
@@ -198,7 +194,9 @@ public class Charge extends AbstractPersistableCustom {
                         .failWithCodeNoParameterAddedToErrorCode("not.allowed.charge.calculation.type.for.savings");
             }
 
-            if (!(ChargeTimeType.fromInt(getChargeTimeType()).isWithdrawalFee() || ChargeTimeType.fromInt(getChargeTimeType()).isSavingsInternalTransfer() ||ChargeTimeType.fromInt(getChargeTimeType()).isSavingsNoActivityFee())
+            if (!(ChargeTimeType.fromInt(getChargeTimeType()).isWithdrawalFee()
+                    || ChargeTimeType.fromInt(getChargeTimeType()).isSavingsInternalTransfer()
+                    || ChargeTimeType.fromInt(getChargeTimeType()).isSavingsNoActivityFee())
                     && ChargeCalculationType.fromInt(getChargeCalculation()).isPercentageOfAmount()) {
                 baseDataValidator.reset().parameter("chargeCalculationType").value(this.chargeCalculation)
                         .failWithCodeNoParameterAddedToErrorCode(
@@ -311,19 +309,19 @@ public class Charge extends AbstractPersistableCustom {
     }
 
     public boolean isParent() {
-      return this.isParent;
+        return this.isParent;
     }
 
     public void setParent(boolean parent) {
-      this.isParent = parent;
+        this.isParent = parent;
     }
 
     public List<Charge> getSubCharges() {
-      return this.subCharges;
+        return this.subCharges;
     }
 
     public void setSubCharges(List<Charge> subCharges) {
-      this.subCharges = subCharges;
+        this.subCharges = subCharges;
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -643,11 +641,11 @@ public class Charge extends AbstractPersistableCustom {
     }
 
     public Charge getCharge() {
-      return this.parent;
+        return this.parent;
     }
 
     public void setCharge(Charge charge) {
-      this.parent = charge;
+        this.parent = charge;
     }
 
     @Override

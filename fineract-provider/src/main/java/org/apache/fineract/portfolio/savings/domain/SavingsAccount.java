@@ -1623,8 +1623,8 @@ public class SavingsAccount extends AbstractPersistableCustom {
     public void setGsim(GroupSavingsIndividualMonitoring gsim) {
         this.gsim = gsim;
     }
-    
-     public Long hasSavingsOfficerId() {
+
+    public Long hasSavingsOfficerId() {
         Long id = null;
         if (this.savingsOfficer != null) {
             id = this.savingsOfficer.getId();
@@ -2729,8 +2729,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
             chargeTransaction = SavingsAccountTransaction.annualFee(this, office(), transactionDate, transactionAmount, user);
         } else if (savingsAccountCharge.isOnInternalSavingsTransfer()) {
             chargeTransaction = SavingsAccountTransaction.internalTransferFee(this, office(), transactionDate, transactionAmount, user);
-        }
-        else {
+        } else {
             chargeTransaction = SavingsAccountTransaction.charge(this, office(), transactionDate, transactionAmount, user);
         }
 
@@ -3270,55 +3269,53 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     public Integer getAccountTypes() {
-          return accountType;
-     }
+        return accountType;
+    }
 
     public void setAccountType(Integer accountType) {
-          this.accountType = accountType;
-     }
+        this.accountType = accountType;
+    }
 
     private boolean isOverdraft() {
-            return allowOverdraft;
+        return allowOverdraft;
     }
 
     public void payInternalTransferFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
         // TODO Make this functional
         for (SavingsAccountCharge charge : this.charges()) {
             if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
-                charge.updateInternalTransferFeeAmount(transactionAmount);
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
-                this.summary.updateSummary(this.currency, this.savingsAccountTransactionSummaryWrapper, this.transactions);
+                if (charge.getCharge().isParent()) {
+                  // do nothing
+                } else {
+                  charge.updateInternalTransferFeeAmount(transactionAmount);
+                  this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+                  this.summary.updateSummary(this.currency, this.savingsAccountTransactionSummaryWrapper, this.transactions);
+                }
             }
         }
     }
 
     /*
-     * This method checks for the account  has Internal Transfer Charge Associated.
-     * returns boolean
+     * This method checks for the account has Internal Transfer Charge
+     * Associated. returns boolean
      */
     public boolean hasInternalSavingsTransferCharge() {
         if (this.charges.isEmpty()) return false;
-        return this.charges.stream()
-        .anyMatch(i -> i.isOnInternalSavingsTransfer());
+        return this.charges.stream().anyMatch(i -> i.isOnInternalSavingsTransfer());
 
     }
 
     /**
      * This return the amount associated to the internal savings charge
+     *
      * @return BigDecimal amount
      */
 
-    public BigDecimal getInternalSavingsTransferAmount() {
-        return this.charges.stream()
-                .filter(i -> i.isOnInternalSavingsTransfer())
-                .findFirst()
-                .get().getCharge().getAmount();
+    public boolean getInternalSavingsTransferisParent() {
+        return this.charges.stream().filter(i -> i.isOnInternalSavingsTransfer()).findFirst().get().getCharge().isParent();
     }
 
     public SavingsAccountCharge getSavingsAccountCharge() {
-        return this.charges.stream()
-                .filter(i -> i.isOnInternalSavingsTransfer())
-                .findFirst()
-                .get();
+        return this.charges.stream().filter(i -> i.isOnInternalSavingsTransfer()).findFirst().get();
     }
 }

@@ -20,7 +20,6 @@ package org.apache.fineract.portfolio.savings.data;
 
 import java.io.Serializable;
 import org.apache.fineract.portfolio.savings.SavingsAccountTransactionType;
-import org.apache.fineract.portfolio.savings.domain.SavingsAccountTransaction;
 
 /**
  * Immutable data object represent savings account transaction type enumerations.

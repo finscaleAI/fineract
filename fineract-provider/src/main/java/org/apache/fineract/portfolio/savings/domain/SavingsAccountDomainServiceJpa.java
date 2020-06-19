@@ -181,12 +181,20 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         saveTransactionToGenerateTransactionId(deposit);
         if (isAccountTransfer) {
             if (account.hasInternalSavingsTransferCharge()) {
+                // We need to check if there are subCharges Associated to it
+                // We need to make sure we pay the subCharges after the parent
+                // Charges
                 account.payInternalTransferFee(transactionAmount, transactionDate, user);
+
             }
 
-         }
+        }
 
         this.savingsAccountRepository.saveAndFlush(account);
+        // Before this it should post in the Total Income Fees or use the accounting rules.
+        // When using accounting rules making a frequent posting will also work.
+        // Then we make two entries which is one debiting and crediting
+
 
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer);
         this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.SAVINGS_DEPOSIT,

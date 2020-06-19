@@ -22,9 +22,10 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+
 import org.apache.fineract.accounting.common.AccountingDropdownReadPlatformService;
 import org.apache.fineract.accounting.glaccount.data.GLAccountData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -151,7 +152,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
                 .retrieveSharesCalculationTypes();
         final List<EnumOptionData> shareChargeTimeTypeOptions = this.chargeDropdownReadPlatformService.retrieveSharesCollectionTimeTypes();
         final Collection<TaxGroupData> taxGroupOptions = this.taxReadPlatformService.retrieveTaxGroupsForLookUp();
-        final Collection<ChargeData>  subCharges = this.retrieveNotParentCharges();
+        final Collection<ChargeData> subCharges = this.retrieveNotParentCharges();
         return ChargeData.template(currencyOptions, allowedChargeCalculationTypeOptions, allowedChargeAppliesToOptions,
                 allowedChargeTimeOptions, chargePaymentOptions, loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions,
                 savingsChargeCalculationTypeOptions, savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions,
@@ -213,6 +214,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
      * @param excludeChargeTimes
      * @param excludeClause
      * @param params
+     *
      * @return
      */
     private void processChargeExclusionsForLoans(ChargeTimeType[] excludeChargeTimes, StringBuilder excludeClause) {
@@ -391,30 +393,32 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
 
     /**
      * Method returning all charges except parent
+     *
      * @return
      */
     @Override
-      public Collection<ChargeData> retrieveNotParentCharges() {
+    public Collection<ChargeData> retrieveNotParentCharges() {
         final ChargeMapper rm = new ChargeMapper();
         String sql = "select " + rm.chargeSchema() + " where c.is_parent=false and c.is_active=true ";
         sql += " order by c.name ";
         return this.jdbcTemplate.query(sql, rm, new Object[] {});
-      }
+    }
 
     /**
      * Method returning sub charges for a parentCharges
+     *
      * @return
      */
 
-  @Override
+    @Override
     public Collection<ChargeData> retrieveSubCharges(Long parentId) {
-      final ChargeMapper rm = new ChargeMapper();
-      String sql = "select " + rm.chargeSchema() + "where c.parent_id = ?";
-      sql += " order by c.name";
-      return this.jdbcTemplate.query(sql, rm, new Object[] { parentId });
+        final ChargeMapper rm = new ChargeMapper();
+        String sql = "select " + rm.chargeSchema() + "where c.parent_id = ?";
+        sql += " order by c.name";
+        return this.jdbcTemplate.query(sql, rm, new Object[] { parentId });
     }
 
-  @Override
+    @Override
     public Collection<ChargeData> retrieveSavingsApplicablePenalties() {
         final ChargeMapper rm = new ChargeMapper();
 
@@ -432,7 +436,14 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         String sql = "select " + rm.savingsProductChargeSchema() + " where c.is_deleted=0 and c.is_active=1 and spc.savings_product_id=? ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { savingsProductId });
+        Collection<ChargeData> savingsCharge = this.jdbcTemplate.query(sql, rm, new Object[] { savingsProductId });
+        for (ChargeData charge: savingsCharge){
+          if(charge.isParent()){
+            Collection<ChargeData> subCharges = this.retrieveSubCharges(charge.getId());
+            charge.setSubCharges(subCharges);
+          }
+        }
+        return savingsCharge;
     }
 
     @Override
@@ -442,7 +453,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         String sql = "select " + rm.shareProductChargeSchema() + " where c.is_deleted=false and c.is_active=true and mspc.product_id=? ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { shareProductId });
+        return  this.jdbcTemplate.query(sql, rm, new Object[] { shareProductId });
     }
 
     @Override

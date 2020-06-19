@@ -759,7 +759,7 @@ public class AccountingProcessorHelper {
             final CashAccountsForSavings accountTypeToBeDebited, final CashAccountsForSavings accountTypeToBeCredited,
             final Long savingsProductId, final Long paymentTypeId, final Long loanId, final String transactionId,
             final Date transactionDate, final BigDecimal totalAmount, final Boolean isReversal,
-            final List<ChargePaymentDTO> chargePaymentDTOs) {
+            final List<ChargePaymentDTO> chargePaymentDTOs, final boolean noMap) {
         // TODO Vishwas: Remove this validation, as and when appropriate Junit
         // tests are written for accounting
         /**
@@ -774,7 +774,7 @@ public class AccountingProcessorHelper {
         ChargePaymentDTO chargePaymentDTO = chargePaymentDTOs.get(0);
 
         final GLAccount chargeSpecificAccount = getLinkedGLAccountForSavingsCharges(savingsProductId, accountTypeToBeCredited.getValue(),
-                chargePaymentDTO.getChargeId());
+                chargePaymentDTO.getChargeId(), noMap);
         final GLAccount savingsControlAccount = getLinkedGLAccountForSavingsProduct(savingsProductId, accountTypeToBeDebited.getValue(),
                 paymentTypeId);
         if (isReversal) {
@@ -1155,7 +1155,7 @@ public class AccountingProcessorHelper {
     }
 
     private GLAccount getLinkedGLAccountForSavingsCharges(final Long savingsProductId, final int accountMappingTypeId,
-            final Long chargeId) {
+            final Long chargeId, final boolean noMap) {
         ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(savingsProductId,
                 PortfolioProductType.SAVING.getValue(), accountMappingTypeId);
         /*****
@@ -1165,16 +1165,21 @@ public class AccountingProcessorHelper {
          *****/
 
         // Vishwas TODO: remove this condition as it should always be true
-        if (accountMappingTypeId == CashAccountsForSavings.INCOME_FROM_FEES.getValue()
-                || accountMappingTypeId == CashAccountsForLoan.INCOME_FROM_PENALTIES.getValue()) {
+        if (noMap) {
+          if (accountMappingTypeId == CashAccountsForSavings.INCOME_FROM_FEES.getValue()
+            || accountMappingTypeId == CashAccountsForLoan.INCOME_FROM_PENALTIES.getValue()) {
             final ProductToGLAccountMapping chargeSpecificIncomeAccountMapping = this.accountMappingRepository
-                    .findProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(savingsProductId,
-                            PortfolioProductType.SAVING.getValue(), accountMappingTypeId, chargeId);
+              .findProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(savingsProductId, PortfolioProductType.SAVING.getValue(),
+                accountMappingTypeId, chargeId);
             if (chargeSpecificIncomeAccountMapping != null) {
-                accountMapping = chargeSpecificIncomeAccountMapping;
+              accountMapping = chargeSpecificIncomeAccountMapping;
             }
+          }
+        } else {
+          return accountMapping.getGlAccount();
         }
-        return accountMapping.getGlAccount();
+
+      return accountMapping.getGlAccount();
     }
 
     private GLAccount getLinkedGLAccountForSavingsProduct(final Long savingsProductId, final int accountMappingTypeId,

@@ -18,10 +18,10 @@
  */
 package org.apache.fineract.portfolio.charge.service;
 
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 import javax.persistence.PersistenceException;
 import javax.sql.DataSource;
@@ -108,18 +108,20 @@ public class ChargeWritePlatformServiceJpaRepositoryImpl implements ChargeWriteP
             if (taxGroupId != null) {
                 taxGroup = this.taxGroupRepository.findOneWithNotFoundDetection(taxGroupId);
             }
-          final Charge charge = Charge.fromJson(command, glAccount, taxGroup);
+            final Charge charge = Charge.fromJson(command, glAccount, taxGroup);
             this.chargeRepository.save(charge);
 
-          /**
-           * Since there are going to many Charges so we should make a method w
-           * getCharges() and returns it as a list of the charges()
-           *
-           */
-          final String [] subCharges = command.arrayValueOfParameterNamed("subCharges");
-          List<Charge> post = getChargesFromId(subCharges);
-          setCharges(post, charge);
-          this.chargeRepository.save(charge);
+            /**
+             * Since there are going to many Charges so we should make a method
+             * w getCharges() and returns it as a list of the charges()
+             *
+             */
+            final String[] subCharges = command.arrayValueOfParameterNamed("subCharges");
+            if (subCharges != null) {
+                List<Charge> post = getChargesFromId(subCharges);
+                setCharges(post, charge);
+                this.chargeRepository.save(charge);
+            }
 
             // check if the office specific products are enabled. If yes, then
             // save this savings product against a specific office
@@ -138,18 +140,17 @@ public class ChargeWritePlatformServiceJpaRepositoryImpl implements ChargeWriteP
         }
     }
 
-    private List<Charge> getChargesFromId(String [] subCharges) {
-      // This will iterate the subCharges where
-      Stream<String> sub = Stream.of(subCharges);
-      List<Charge> list = new ArrayList<>();
-      sub.forEach(a -> this.chargeRepository.findById(Long.parseLong(a))
-      .stream().forEach(b -> list.add(b)));
-      return list;
+    private List<Charge> getChargesFromId(String[] subCharges) {
+        // This will iterate the subCharges where
+        Stream<String> sub = Stream.of(subCharges);
+        List<Charge> list = new ArrayList<>();
+        sub.forEach(a -> this.chargeRepository.findById(Long.parseLong(a)).stream().forEach(b -> list.add(b)));
+        return list;
     }
 
     private void setCharges(List<Charge> charges, Charge charge) {
-      // This method updates the charges parentID;
-      charge.setSubCharges(charges);
+        // This method updates the charges parentID;
+        charge.setSubCharges(charges);
     }
 
     @Transactional

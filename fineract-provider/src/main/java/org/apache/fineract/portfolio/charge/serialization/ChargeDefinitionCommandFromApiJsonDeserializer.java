@@ -82,8 +82,7 @@ public final class ChargeDefinitionCommandFromApiJsonDeserializer {
             baseDataValidator.reset().parameter("chargeAppliesTo").value(chargeAppliesTo).isOneOfTheseValues(ChargeAppliesTo.validValues());
         }
         final Long parentId = this.fromApiJsonHelper.extractLongNamed("parentId", element);
-        baseDataValidator.reset().parameter(ChargesApiConstants.parentID).value(parentId).ignoreIfNull()
-          .integerGreaterThanZero();
+        baseDataValidator.reset().parameter(ChargesApiConstants.parentID).value(parentId).ignoreIfNull().integerGreaterThanZero();
 
         final Integer chargeCalculationType = this.fromApiJsonHelper.extractIntegerSansLocaleNamed("chargeCalculationType", element);
         baseDataValidator.reset().parameter("chargeCalculationType").value(chargeCalculationType).notNull();
@@ -99,9 +98,9 @@ public final class ChargeDefinitionCommandFromApiJsonDeserializer {
         }
 
         if (this.fromApiJsonHelper.parameterExists("subCharges", element)) {
-          // We know that subCharges exist then we extract them.
-          String[] subCharges = this.fromApiJsonHelper.extractArrayNamed("subCharges", element);
-          baseDataValidator.reset().parameter("subCharges").value(subCharges).arrayNotEmpty();
+            // We know that subCharges exist then we extract them.
+            String[] subCharges = this.fromApiJsonHelper.extractArrayNamed("subCharges", element);
+            baseDataValidator.reset().parameter("subCharges").value(subCharges).arrayNotEmpty();
         }
 
         final ChargeAppliesTo appliesTo = ChargeAppliesTo.fromInt(chargeAppliesTo);

@@ -39,11 +39,9 @@ public enum SavingsAccountTransactionType {
     WITHDRAW_TRANSFER(14, "savingsAccountTransactionType.withdrawTransfer"), //
     REJECT_TRANSFER(15, "savingsAccountTransactionType.rejectTransfer"), WRITTEN_OFF(16, "savingsAccountTransactionType.writtenoff"), //
     OVERDRAFT_INTEREST(17, "savingsAccountTransactionType.overdraftInterest"), //
-    WITHHOLD_TAX(18, "savingsAccountTransactionType.withholdTax"),
-    ESCHEAT(19, "savingsAccountTransactionType.escheat"),
-    AMOUNT_HOLD(20, "savingsAccountTransactionType.onHold"),
-    AMOUNT_RELEASE(21, "savingsAccountTransactionType.release"),
-    INTERNAL_TRANSFER_FEE(22, "savingsAccountTransactionType.internalTransferFee");
+    WITHHOLD_TAX(18, "savingsAccountTransactionType.withholdTax"), ESCHEAT(19, "savingsAccountTransactionType.escheat"), AMOUNT_HOLD(20,
+            "savingsAccountTransactionType.onHold"), AMOUNT_RELEASE(21, "savingsAccountTransactionType.release"), INTERNAL_TRANSFER_FEE(22,
+                    "savingsAccountTransactionType.internalTransferFee");
 
     private final Integer value;
     private final String code;
@@ -215,7 +213,8 @@ public enum SavingsAccountTransactionType {
     }
 
     public boolean isDebit() {
-        return isWithdrawal() || isWithdrawalFee() || isAnnualFee() || isPayCharge() || isIncomeFromInterest() || isWithHoldTax() || isEscheat() || isInternalTransferFee();
+        return isWithdrawal() || isWithdrawalFee() || isAnnualFee() || isPayCharge() || isIncomeFromInterest() || isWithHoldTax()
+                || isEscheat() || isInternalTransferFee();
     }
 
     public boolean isCredit() {
