@@ -188,7 +188,7 @@ public class CashBasedAccountingProcessorForSavings implements AccountingProcess
                     this.helper.createCashBasedJournalEntriesAndReversalsForSavingsCharges(office, currencyCode,
                             CashAccountsForSavings.OVERDRAFT_PORTFOLIO_CONTROL, CashAccountsForSavings.INCOME_FROM_PENALTIES,
                             savingsProductId, paymentTypeId, savingsId, transactionId, transactionDate, overdraftAmount, isReversal,
-                            penaltyPayments,true);
+                            penaltyPayments, true);
                     if (amount.subtract(overdraftAmount).compareTo(BigDecimal.ZERO) > 0) {
                         this.helper.createCashBasedJournalEntriesAndReversalsForSavingsCharges(office, currencyCode,
                                 CashAccountsForSavings.SAVINGS_CONTROL, CashAccountsForSavings.INCOME_FROM_PENALTIES, savingsProductId,
@@ -203,7 +203,7 @@ public class CashBasedAccountingProcessorForSavings implements AccountingProcess
                         this.helper.createCashBasedJournalEntriesAndReversalsForSavingsCharges(office, currencyCode,
                                 CashAccountsForSavings.SAVINGS_CONTROL, CashAccountsForSavings.INCOME_FROM_FEES, savingsProductId,
                                 paymentTypeId, savingsId, transactionId, transactionDate, amount.subtract(overdraftAmount), isReversal,
-                                feePayments,true);
+                                feePayments, true);
                     }
                 }
             }
@@ -215,12 +215,12 @@ public class CashBasedAccountingProcessorForSavings implements AccountingProcess
                             CashAccountsForSavings.SAVINGS_CONTROL, CashAccountsForSavings.INCOME_FROM_PENALTIES, savingsProductId,
                             paymentTypeId, savingsId, transactionId, transactionDate, amount, isReversal, penaltyPayments, true);
                 } else {
-                  this.helper.createCashBasedJournalEntriesAndReversalsForSavingsCharges(office, currencyCode,
-                    CashAccountsForSavings.SAVINGS_CONTROL, CashAccountsForSavings.INCOME_FROM_FEES, savingsProductId,
-                    paymentTypeId, savingsId, transactionId, transactionDate, amount, isReversal, feePayments, false);
+                    this.helper.createCashBasedJournalEntriesAndReversalsForSavingsCharges(office, currencyCode,
+                            CashAccountsForSavings.SAVINGS_CONTROL, CashAccountsForSavings.INCOME_FROM_FEES, savingsProductId,
+                            paymentTypeId, savingsId, transactionId, transactionDate, amount, isReversal, feePayments, false);
                     this.helper.createCashBasedJournalEntriesAndReversalsForSavingsCharges(office, currencyCode,
                             CashAccountsForSavings.INCOME_FROM_FEES, CashAccountsForSavings.INCOME_FROM_FEES, savingsProductId,
-                            paymentTypeId, savingsId, transactionId, transactionDate, amount, isReversal, feePayments,true);
+                            paymentTypeId, savingsId, transactionId, transactionDate, amount, isReversal, feePayments, true);
                 }
             }
 

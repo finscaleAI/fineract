@@ -344,8 +344,8 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
         return this.subCharges = subCharges;
     }
 
-    public Collection<ChargeData> getSubCharges(){
-      return this.subCharges;
+    public Collection<ChargeData> getSubCharges() {
+        return this.subCharges;
     }
 
 }

@@ -191,10 +191,10 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         }
 
         this.savingsAccountRepository.saveAndFlush(account);
-        // Before this it should post in the Total Income Fees or use the accounting rules.
+        // Before this it should post in the Total Income Fees or use the
+        // accounting rules.
         // When using accounting rules making a frequent posting will also work.
         // Then we make two entries which is one debiting and crediting
-
 
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer);
         this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.SAVINGS_DEPOSIT,

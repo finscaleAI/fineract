@@ -1154,8 +1154,8 @@ public class AccountingProcessorHelper {
         return accountMapping.getGlAccount();
     }
 
-    private GLAccount getLinkedGLAccountForSavingsCharges(final Long savingsProductId, final int accountMappingTypeId,
-            final Long chargeId, final boolean noMap) {
+    private GLAccount getLinkedGLAccountForSavingsCharges(final Long savingsProductId, final int accountMappingTypeId, final Long chargeId,
+            final boolean noMap) {
         ProductToGLAccountMapping accountMapping = this.accountMappingRepository.findCoreProductToFinAccountMapping(savingsProductId,
                 PortfolioProductType.SAVING.getValue(), accountMappingTypeId);
         /*****
@@ -1166,20 +1166,20 @@ public class AccountingProcessorHelper {
 
         // Vishwas TODO: remove this condition as it should always be true
         if (noMap) {
-          if (accountMappingTypeId == CashAccountsForSavings.INCOME_FROM_FEES.getValue()
-            || accountMappingTypeId == CashAccountsForLoan.INCOME_FROM_PENALTIES.getValue()) {
-            final ProductToGLAccountMapping chargeSpecificIncomeAccountMapping = this.accountMappingRepository
-              .findProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(savingsProductId, PortfolioProductType.SAVING.getValue(),
-                accountMappingTypeId, chargeId);
-            if (chargeSpecificIncomeAccountMapping != null) {
-              accountMapping = chargeSpecificIncomeAccountMapping;
+            if (accountMappingTypeId == CashAccountsForSavings.INCOME_FROM_FEES.getValue()
+                    || accountMappingTypeId == CashAccountsForLoan.INCOME_FROM_PENALTIES.getValue()) {
+                final ProductToGLAccountMapping chargeSpecificIncomeAccountMapping = this.accountMappingRepository
+                        .findProductIdAndProductTypeAndFinancialAccountTypeAndChargeId(savingsProductId,
+                                PortfolioProductType.SAVING.getValue(), accountMappingTypeId, chargeId);
+                if (chargeSpecificIncomeAccountMapping != null) {
+                    accountMapping = chargeSpecificIncomeAccountMapping;
+                }
             }
-          }
         } else {
-          return accountMapping.getGlAccount();
+            return accountMapping.getGlAccount();
         }
 
-      return accountMapping.getGlAccount();
+        return accountMapping.getGlAccount();
     }
 
     private GLAccount getLinkedGLAccountForSavingsProduct(final Long savingsProductId, final int accountMappingTypeId,

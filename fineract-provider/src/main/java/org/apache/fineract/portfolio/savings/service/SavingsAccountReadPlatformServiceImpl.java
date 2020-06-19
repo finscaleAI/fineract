@@ -640,7 +640,8 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
 
             final Collection<SavingsAccountTransactionData> transactions = null;
             final Collection<ChargeData> productCharges = this.chargeReadPlatformService.retrieveSavingsProductCharges(productId);
-           // final Collection<ChargeData> subCharges = this.chargeReadPlatformService.retrieveSubCharges()
+            // final Collection<ChargeData> subCharges =
+            // this.chargeReadPlatformService.retrieveSubCharges()
             // update charges from Product charges
             final Collection<SavingsAccountChargeData> charges = fromChargesToSavingsCharges(productCharges);
 
@@ -723,13 +724,13 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
     private Collection<SavingsAccountChargeData> fromChargesToSavingsCharges(final Collection<ChargeData> productCharges) {
         final Collection<SavingsAccountChargeData> savingsCharges = new ArrayList<>();
         for (final ChargeData chargeData : productCharges) {
-          SavingsAccountChargeData savingsCharge = chargeData.toSavingsAccountChargeData();
-          savingsCharges.add(savingsCharge);
-            if (chargeData.isParent()){
-              for (final ChargeData subCharge: chargeData.getSubCharges()){
+            SavingsAccountChargeData savingsCharge = chargeData.toSavingsAccountChargeData();
+            savingsCharges.add(savingsCharge);
+            if (chargeData.isParent()) {
+                for (final ChargeData subCharge : chargeData.getSubCharges()) {
                     savingsCharge = subCharge.toSavingsAccountChargeData();
                     savingsCharges.add(savingsCharge);
-              }
+                }
             }
 
         }

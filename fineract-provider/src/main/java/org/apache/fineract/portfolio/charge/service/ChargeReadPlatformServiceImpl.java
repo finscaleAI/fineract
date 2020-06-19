@@ -22,10 +22,9 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-
 import org.apache.fineract.accounting.common.AccountingDropdownReadPlatformService;
 import org.apache.fineract.accounting.glaccount.data.GLAccountData;
 import org.apache.fineract.infrastructure.core.data.EnumOptionData;
@@ -437,11 +436,11 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
         Collection<ChargeData> savingsCharge = this.jdbcTemplate.query(sql, rm, new Object[] { savingsProductId });
-        for (ChargeData charge: savingsCharge){
-          if(charge.isParent()){
-            Collection<ChargeData> subCharges = this.retrieveSubCharges(charge.getId());
-            charge.setSubCharges(subCharges);
-          }
+        for (ChargeData charge : savingsCharge) {
+            if (charge.isParent()) {
+                Collection<ChargeData> subCharges = this.retrieveSubCharges(charge.getId());
+                charge.setSubCharges(subCharges);
+            }
         }
         return savingsCharge;
     }
@@ -453,7 +452,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         String sql = "select " + rm.shareProductChargeSchema() + " where c.is_deleted=false and c.is_active=true and mspc.product_id=? ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
-        return  this.jdbcTemplate.query(sql, rm, new Object[] { shareProductId });
+        return this.jdbcTemplate.query(sql, rm, new Object[] { shareProductId });
     }
 
     @Override

@@ -3285,11 +3285,11 @@ public class SavingsAccount extends AbstractPersistableCustom {
         for (SavingsAccountCharge charge : this.charges()) {
             if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
                 if (charge.getCharge().isParent()) {
-                  // do nothing
+                    // do nothing
                 } else {
-                  charge.updateInternalTransferFeeAmount(transactionAmount);
-                  this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
-                  this.summary.updateSummary(this.currency, this.savingsAccountTransactionSummaryWrapper, this.transactions);
+                    charge.updateInternalTransferFeeAmount(transactionAmount);
+                    this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+                    this.summary.updateSummary(this.currency, this.savingsAccountTransactionSummaryWrapper, this.transactions);
                 }
             }
         }
