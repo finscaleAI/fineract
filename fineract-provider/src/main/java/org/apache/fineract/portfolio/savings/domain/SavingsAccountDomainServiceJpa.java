@@ -184,18 +184,16 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                 // We need to check if there are subCharges Associated to it
                 // We need to make sure we pay the subCharges after the parent
                 // Charges
-                account.payInternalTransferFee(transactionAmount, transactionDate, user);
-
+                account.payInternalTransferFee(deposit,transactionAmount, transactionDate, user);
+                deposit.setParent(true);
             }
 
         }
 
         this.savingsAccountRepository.saveAndFlush(account);
-        // Before this it should post in the Total Income Fees or use the
-        // accounting rules.
-        // When using accounting rules making a frequent posting will also work.
-        // Then we make two entries which is one debiting and crediting
-
+        // once its saved
+        // So we get the charges only connected
+        // saving the parent transactions
         postJournalEntries(account, existingTransactionIds, existingReversedTransactionIds, isAccountTransfer);
         this.businessEventNotifierService.notifyBusinessEventWasExecuted(BusinessEvents.SAVINGS_DEPOSIT,
                 constructEntityMap(BusinessEntity.SAVINGS_TRANSACTION, deposit));

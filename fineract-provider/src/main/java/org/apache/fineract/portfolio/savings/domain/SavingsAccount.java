@@ -1062,7 +1062,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         for (SavingsAccountCharge charge : this.charges()) {
             if (charge.isWithdrawalFee() && charge.isActive()) {
                 charge.updateWithdralFeeAmount(transactionAmount);
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+                this.payCharge(null,charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
             }
         }
     }
@@ -2261,7 +2261,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         for (SavingsAccountCharge savingsAccountCharge : this.charges()) {
             if (savingsAccountCharge.isSavingsActivation()) {
                 isSavingsChargeApplied = true;
-                payCharge(savingsAccountCharge, savingsAccountCharge.getAmountOutstanding(getCurrency()), getActivationLocalDate(), user);
+                payCharge(null,savingsAccountCharge, savingsAccountCharge.getAmountOutstanding(getCurrency()), getActivationLocalDate(), user);
             }
         }
 
@@ -2710,16 +2710,16 @@ public class SavingsAccount extends AbstractPersistableCustom {
             }
         }
 
-        this.payCharge(savingsAccountCharge, chargePaid, transactionDate, user);
+        this.payCharge(null,savingsAccountCharge, chargePaid, transactionDate, user);
     }
 
-    public void payCharge(final SavingsAccountCharge savingsAccountCharge, final Money amountPaid, final LocalDate transactionDate,
+    public void payCharge(final SavingsAccountTransaction parent,final SavingsAccountCharge savingsAccountCharge, final Money amountPaid, final LocalDate transactionDate,
             final AppUser user) {
         savingsAccountCharge.pay(getCurrency(), amountPaid);
-        handlePayChargeTransactions(savingsAccountCharge, amountPaid, transactionDate, user);
+        handlePayChargeTransactions(parent,savingsAccountCharge, amountPaid, transactionDate, user);
     }
 
-    private void handlePayChargeTransactions(SavingsAccountCharge savingsAccountCharge, Money transactionAmount,
+    private void handlePayChargeTransactions(final SavingsAccountTransaction parent,SavingsAccountCharge savingsAccountCharge, Money transactionAmount,
             final LocalDate transactionDate, final AppUser user) {
         SavingsAccountTransaction chargeTransaction = null;
 
@@ -2728,7 +2728,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         } else if (savingsAccountCharge.isAnnualFee()) {
             chargeTransaction = SavingsAccountTransaction.annualFee(this, office(), transactionDate, transactionAmount, user);
         } else if (savingsAccountCharge.isOnInternalSavingsTransfer()) {
-            chargeTransaction = SavingsAccountTransaction.internalTransferFee(this, office(), transactionDate, transactionAmount, user);
+            chargeTransaction = SavingsAccountTransaction.internalTransferFee(parent,this, office(), transactionDate, transactionAmount, user);
         } else {
             chargeTransaction = SavingsAccountTransaction.charge(this, office(), transactionDate, transactionAmount, user);
         }
@@ -2988,7 +2988,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         for (SavingsAccountCharge charge : this.charges()) {
             if (charge.isSavingsNoActivity() && charge.isActive()) {
                 charge.updateWithdralFeeAmount(this.getAccountBalance());
-                this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, appUser);
+                this.payCharge(null,charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, appUser);
             }
         }
         recalculateDailyBalances(Money.zero(this.currency), transactionDate);
@@ -3280,7 +3280,7 @@ public class SavingsAccount extends AbstractPersistableCustom {
         return allowOverdraft;
     }
 
-    public void payInternalTransferFee(final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
+    public void payInternalTransferFee(final SavingsAccountTransaction parent,final BigDecimal transactionAmount, final LocalDate transactionDate, final AppUser user) {
         // TODO Make this functional
         for (SavingsAccountCharge charge : this.charges()) {
             if (charge.isOnInternalSavingsTransfer() && charge.isActive()) {
@@ -3288,8 +3288,9 @@ public class SavingsAccount extends AbstractPersistableCustom {
                     // do nothing
                 } else {
                     charge.updateInternalTransferFeeAmount(transactionAmount);
-                    this.payCharge(charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
+                    this.payCharge(parent,charge, charge.getAmountOutstanding(this.getCurrency()), transactionDate, user);
                     this.summary.updateSummary(this.currency, this.savingsAccountTransactionSummaryWrapper, this.transactions);
+
                 }
             }
         }
