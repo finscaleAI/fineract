@@ -169,6 +169,15 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         final SavingsAccountTransaction deposit = account.deposit(transactionDTO, savingsAccountTransactionType);
         final LocalDate postInterestOnDate = null;
         final MathContext mc = MathContext.DECIMAL64;
+        if (isAccountTransfer) {
+          if (account.hasInternalSavingsTransferCharge()) {
+            // We need to check if there are subCharges Associated to it
+            // We need to make sure we pay the subCharges after the parent
+            // Charges
+            account.payInternalTransferFee(deposit, transactionAmount, transactionDate, user);
+            deposit.setParent(true);
+          }
+        }
         if (account.isBeforeLastPostingPeriod(transactionDate)) {
             final LocalDate today = DateUtils.getLocalDateOfTenant();
             account.postInterest(mc, today, isInterestTransfer, isSavingsInterestPostingAtCurrentPeriodEnd, financialYearBeginningMonth,
@@ -179,16 +188,6 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
                     financialYearBeginningMonth, postInterestOnDate);
         }
         saveTransactionToGenerateTransactionId(deposit);
-        if (isAccountTransfer) {
-            if (account.hasInternalSavingsTransferCharge()) {
-                // We need to check if there are subCharges Associated to it
-                // We need to make sure we pay the subCharges after the parent
-                // Charges
-                account.payInternalTransferFee(deposit, transactionAmount, transactionDate, user);
-                deposit.setParent(true);
-            }
-
-        }
 
         this.savingsAccountRepository.saveAndFlush(account);
         // once its saved

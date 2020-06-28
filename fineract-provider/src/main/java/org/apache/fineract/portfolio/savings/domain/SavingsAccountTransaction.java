@@ -663,7 +663,7 @@ public final class SavingsAccountTransaction extends AbstractPersistableCustom {
 
     public boolean isDebit() {
         return isWithdrawal() || isWithdrawalFeeAndNotReversed() || isAnnualFeeAndNotReversed() || isPayCharge()
-                || isOverdraftInterestAndNotReversed() || isWithHoldTaxAndNotReversed();
+                || isOverdraftInterestAndNotReversed() || isWithHoldTaxAndNotReversed() || isInternalTransaferCharge();
     }
 
     public boolean isWithHoldTaxAndNotReversed() {
