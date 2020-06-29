@@ -170,13 +170,13 @@ public class SavingsAccountDomainServiceJpa implements SavingsAccountDomainServi
         final LocalDate postInterestOnDate = null;
         final MathContext mc = MathContext.DECIMAL64;
         if (isAccountTransfer) {
-          if (account.hasInternalSavingsTransferCharge()) {
-            // We need to check if there are subCharges Associated to it
-            // We need to make sure we pay the subCharges after the parent
-            // Charges
-            account.payInternalTransferFee(deposit, transactionAmount, transactionDate, user);
-            deposit.setParent(true);
-          }
+            if (account.hasInternalSavingsTransferCharge()) {
+                // We need to check if there are subCharges Associated to it
+                // We need to make sure we pay the subCharges after the parent
+                // Charges
+                account.payInternalTransferFee(deposit, transactionAmount, transactionDate, user);
+                deposit.setParent(true);
+            }
         }
         if (account.isBeforeLastPostingPeriod(transactionDate)) {
             final LocalDate today = DateUtils.getLocalDateOfTenant();
