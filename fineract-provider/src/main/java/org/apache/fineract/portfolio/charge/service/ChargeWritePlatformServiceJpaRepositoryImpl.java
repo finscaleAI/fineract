@@ -112,8 +112,8 @@ public class ChargeWritePlatformServiceJpaRepositoryImpl implements ChargeWriteP
             this.chargeRepository.save(charge);
 
             /**
-             * Since there are going to many Charges so we should make a method
-             * w getCharges() and returns it as a list of the charges()
+             * Since there are going to many Charges so we should make a method w getCharges() and returns it as a list
+             * of the charges()
              *
              */
             final String[] subCharges = command.arrayValueOfParameterNamed("subCharges");

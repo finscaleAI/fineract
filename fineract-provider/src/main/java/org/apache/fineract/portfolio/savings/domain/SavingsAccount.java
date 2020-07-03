@@ -3300,11 +3300,12 @@ public class SavingsAccount extends AbstractPersistableCustom {
     }
 
     /*
-     * This method checks for the account has Internal Transfer Charge
-     * Associated. returns boolean
+     * This method checks for the account has Internal Transfer Charge Associated. returns boolean
      */
     public boolean hasInternalSavingsTransferCharge() {
-        if (this.charges.isEmpty()) return false;
+        if (this.charges.isEmpty()) {
+            return false;
+        }
         return this.charges.stream().anyMatch(i -> i.isOnInternalSavingsTransfer());
 
     }
