@@ -40,7 +40,8 @@ public enum SavingsAccountTransactionType {
     REJECT_TRANSFER(15, "savingsAccountTransactionType.rejectTransfer"), WRITTEN_OFF(16, "savingsAccountTransactionType.writtenoff"), //
     OVERDRAFT_INTEREST(17, "savingsAccountTransactionType.overdraftInterest"), //
     WITHHOLD_TAX(18, "savingsAccountTransactionType.withholdTax"), ESCHEAT(19, "savingsAccountTransactionType.escheat"), AMOUNT_HOLD(20,
-            "savingsAccountTransactionType.onHold"), AMOUNT_RELEASE(21, "savingsAccountTransactionType.release");
+            "savingsAccountTransactionType.onHold"), AMOUNT_RELEASE(21, "savingsAccountTransactionType.release"), INTERNAL_TRANSFER_FEE(22,
+                    "savingsAccountTransactionType.internalTransferFee");
 
     private final Integer value;
     private final String code;
@@ -120,6 +121,9 @@ public enum SavingsAccountTransactionType {
             case 21:
                 savingsAccountTransactionType = SavingsAccountTransactionType.AMOUNT_RELEASE;
             break;
+            case 22:
+                savingsAccountTransactionType = SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE;
+            break;
         }
         return savingsAccountTransactionType;
     }
@@ -156,8 +160,12 @@ public enum SavingsAccountTransactionType {
         return this.value.equals(SavingsAccountTransactionType.PAY_CHARGE.getValue());
     }
 
+    public boolean isInternalTransferFee() {
+        return this.value.equals(SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue());
+    }
+
     public boolean isChargeTransaction() {
-        return isPayCharge() || isWithdrawalFee() || isAnnualFee();
+        return isPayCharge() || isWithdrawalFee() || isAnnualFee() || isInternalTransferFee();
     }
 
     public boolean isWaiveCharge() {
@@ -206,7 +214,7 @@ public enum SavingsAccountTransactionType {
 
     public boolean isDebit() {
         return isWithdrawal() || isWithdrawalFee() || isAnnualFee() || isPayCharge() || isIncomeFromInterest() || isWithHoldTax()
-                || isEscheat();
+                || isEscheat() || isInternalTransferFee();
     }
 
     public boolean isCredit() {

@@ -201,6 +201,11 @@ public class SavingsEnumerations {
                 optionData = new SavingsAccountTransactionEnumData(SavingsAccountTransactionType.AMOUNT_RELEASE.getValue().longValue(),
                         SavingsAccountTransactionType.AMOUNT_RELEASE.getCode(), "Release Amount");
             break;
+            case INTERNAL_TRANSFER_FEE:
+                optionData = new SavingsAccountTransactionEnumData(
+                        SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getValue().longValue(),
+                        SavingsAccountTransactionType.INTERNAL_TRANSFER_FEE.getCode(), "Internal Savings Transfer");
+            break;
         }
         return optionData;
     }

@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import javax.persistence.Column;
@@ -222,7 +223,7 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
 
         populateDerivedFields(transactionAmount, chargeAmount);
 
-        if (this.isWithdrawalFee() || this.isSavingsNoActivity()) {
+        if (this.isWithdrawalFee() || this.isSavingsNoActivity() || this.isOnInternalSavingsTransfer()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
 
@@ -316,6 +317,10 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         this.amountOutstanding = calculateAmountOutstanding(currency);
 
         if (this.isWithdrawalFee()) {
+            this.amountOutstanding = BigDecimal.ZERO;
+        }
+
+        if (this.isOnInternalSavingsTransfer()) {
             this.amountOutstanding = BigDecimal.ZERO;
         }
         // to reset amount outstanding for annual and monthly fee
@@ -647,12 +652,20 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return this.charge;
     }
 
+    public List<Charge> getSubCharges() {
+        return this.charge.getSubCharges();
+    }
+
     public SavingsAccount savingsAccount() {
         return this.savingsAccount;
     }
 
     public boolean isOnSpecifiedDueDate() {
         return ChargeTimeType.fromInt(this.chargeTime).isOnSpecifiedDueDate();
+    }
+
+    public boolean isOnInternalSavingsTransfer() {
+        return ChargeTimeType.fromInt(this.chargeTime).isSavingsInternalTransfer();
     }
 
     public boolean isSavingsActivation() {
@@ -736,8 +749,22 @@ public class SavingsAccountCharge extends AbstractPersistableCustom {
         return amountPaybale;
     }
 
+    public BigDecimal calculateDepositFeeAmount(@NotNull BigDecimal transactionAmount) {
+        BigDecimal amountPayable = BigDecimal.ZERO;
+        if (ChargeCalculationType.fromInt(this.chargeCalculation).isFlat()) {
+            amountPayable = this.amount;
+        } else if (ChargeCalculationType.fromInt(this.chargeCalculation).isPercentageOfAmount()) {
+            amountPayable = transactionAmount.multiply(this.percentage).divide(BigDecimal.valueOf(100L), MoneyHelper.getRoundingMode());
+        }
+        return amountPayable;
+    }
+
     public BigDecimal updateWithdralFeeAmount(final BigDecimal transactionAmount) {
         return amountOutstanding = calculateWithdralFeeAmount(transactionAmount);
+    }
+
+    public BigDecimal updateInternalTransferFeeAmount(final BigDecimal transactionAmount) {
+        return amountOutstanding = calculateDepositFeeAmount(transactionAmount);
     }
 
     public void updateToNextDueDateFrom(final LocalDate startingDate) {

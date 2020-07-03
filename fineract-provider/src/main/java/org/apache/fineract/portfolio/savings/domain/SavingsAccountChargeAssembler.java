@@ -48,6 +48,7 @@ import org.apache.fineract.portfolio.charge.domain.ChargeRepositoryWrapper;
 import org.apache.fineract.portfolio.charge.domain.ChargeTimeType;
 import org.apache.fineract.portfolio.charge.exception.ChargeCannotBeAppliedToException;
 import org.apache.fineract.portfolio.charge.exception.SavingsAccountChargeNotFoundException;
+import org.apache.fineract.portfolio.charge.service.ChargeReadPlatformService;
 import org.joda.time.LocalDate;
 import org.joda.time.MonthDay;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,13 +60,16 @@ public class SavingsAccountChargeAssembler {
     private final FromJsonHelper fromApiJsonHelper;
     private final ChargeRepositoryWrapper chargeRepository;
     private final SavingsAccountChargeRepository savingsAccountChargeRepository;
+    private final ChargeReadPlatformService chargeReadPlatformService;
 
     @Autowired
     public SavingsAccountChargeAssembler(final FromJsonHelper fromApiJsonHelper, final ChargeRepositoryWrapper chargeRepository,
-            final SavingsAccountChargeRepository savingsAccountChargeRepository) {
+            final SavingsAccountChargeRepository savingsAccountChargeRepository,
+            final ChargeReadPlatformService chargeReadPlatformService) {
         this.fromApiJsonHelper = fromApiJsonHelper;
         this.chargeRepository = chargeRepository;
         this.savingsAccountChargeRepository = savingsAccountChargeRepository;
+        this.chargeReadPlatformService = chargeReadPlatformService;
     }
 
     public Set<SavingsAccountCharge> fromParsedJson(final JsonElement element, final String productCurrencyCode) {
@@ -100,6 +104,7 @@ public class SavingsAccountChargeAssembler {
 
                     if (id == null) {
                         final Charge chargeDefinition = this.chargeRepository.findOneWithNotFoundDetection(chargeId);
+                        // we find the sub charges
 
                         if (!chargeDefinition.isSavingsCharge()) {
                             final String errorMessage = "Charge with identifier " + chargeDefinition.getId()

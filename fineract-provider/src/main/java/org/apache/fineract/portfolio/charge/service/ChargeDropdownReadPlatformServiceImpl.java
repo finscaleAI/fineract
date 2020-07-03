@@ -102,7 +102,8 @@ public class ChargeDropdownReadPlatformServiceImpl implements ChargeDropdownRead
                 // chargeTimeType(ChargeTimeType.SAVINGS_CLOSURE),
                 chargeTimeType(ChargeTimeType.WITHDRAWAL_FEE), chargeTimeType(ChargeTimeType.ANNUAL_FEE),
                 chargeTimeType(ChargeTimeType.MONTHLY_FEE), chargeTimeType(ChargeTimeType.WEEKLY_FEE),
-                chargeTimeType(ChargeTimeType.OVERDRAFT_FEE), chargeTimeType(ChargeTimeType.SAVINGS_NOACTIVITY_FEE));
+                chargeTimeType(ChargeTimeType.OVERDRAFT_FEE), chargeTimeType(ChargeTimeType.SAVINGS_NOACTIVITY_FEE),
+                chargeTimeType(ChargeTimeType.SAVINGS_INTERNAL_TRANSFER));
     }
 
     @Override

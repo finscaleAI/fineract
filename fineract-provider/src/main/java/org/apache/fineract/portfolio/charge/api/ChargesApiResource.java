@@ -68,7 +68,7 @@ public class ChargesApiResource {
             "chargeAppliesTo", "chargeTimeType", "chargeCalculationType", "chargeCalculationTypeOptions", "chargeAppliesToOptions",
             "chargeTimeTypeOptions", "currencyOptions", "loanChargeCalculationTypeOptions", "loanChargeTimeTypeOptions",
             "savingsChargeCalculationTypeOptions", "savingsChargeTimeTypeOptions", "incomeAccount", "clientChargeCalculationTypeOptions",
-            "clientChargeTimeTypeOptions"));
+            "clientChargeTimeTypeOptions", "subCharges"));
 
     private final String resourceNameForPermissions = "CHARGE";
 
@@ -122,6 +122,9 @@ public class ChargesApiResource {
         final ApiRequestJsonSerializationSettings settings = this.apiRequestParameterHelper.process(uriInfo.getQueryParameters());
 
         ChargeData charge = this.readPlatformService.retrieveCharge(chargeId);
+        // Retrieve Sub Charges
+        Collection<ChargeData> subCharges = this.readPlatformService.retrieveSubCharges(chargeId);
+        charge.setSubCharges(subCharges);
         if (settings.isTemplate()) {
             final ChargeData templateData = this.readPlatformService.retrieveNewChargeDetails();
             charge = ChargeData.withTemplate(charge, templateData);

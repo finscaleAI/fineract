@@ -151,11 +151,12 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
                 .retrieveSharesCalculationTypes();
         final List<EnumOptionData> shareChargeTimeTypeOptions = this.chargeDropdownReadPlatformService.retrieveSharesCollectionTimeTypes();
         final Collection<TaxGroupData> taxGroupOptions = this.taxReadPlatformService.retrieveTaxGroupsForLookUp();
+        final Collection<ChargeData> subCharges = this.retrieveNotParentCharges();
         return ChargeData.template(currencyOptions, allowedChargeCalculationTypeOptions, allowedChargeAppliesToOptions,
                 allowedChargeTimeOptions, chargePaymentOptions, loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions,
                 savingsChargeCalculationTypeOptions, savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions,
                 clientChargeTimeTypeOptions, feeFrequencyOptions, incomeOrLiabilityAccountOptions, taxGroupOptions,
-                shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions);
+                shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions, subCharges);
     }
 
     @Override
@@ -212,6 +213,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
      * @param excludeChargeTimes
      * @param excludeClause
      * @param params
+     *
      * @return
      */
     private void processChargeExclusionsForLoans(ChargeTimeType[] excludeChargeTimes, StringBuilder excludeClause) {
@@ -282,6 +284,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
                     + "oc.currency_multiplesof as inMultiplesOf, oc.display_symbol as currencyDisplaySymbol, "
                     + "oc.internationalized_name_code as currencyNameCode, c.fee_on_day as feeOnDay, c.fee_on_month as feeOnMonth, "
                     + "c.fee_interval as feeInterval, c.fee_frequency as feeFrequency,c.min_cap as minCap,c.max_cap as maxCap, "
+                    + "c.is_parent as isParent, "
                     + "c.income_or_liability_account_id as glAccountId , acc.name as glAccountName, acc.gl_code as glCode, "
                     + "tg.id as taxGroupId, tg.name as taxGroupName " + "from m_charge c "
                     + "join m_organisation_currency oc on c.currency_code = oc.code "
@@ -331,6 +334,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
 
             final boolean penalty = rs.getBoolean("penalty");
             final boolean active = rs.getBoolean("active");
+            final boolean isParent = rs.getBoolean("isParent");
 
             final Integer feeInterval = JdbcSupport.getInteger(rs, "feeInterval");
             EnumOptionData feeFrequencyType = null;
@@ -356,6 +360,8 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
                 glAccountData = new GLAccountData(glAccountId, glAccountName, glCode);
             }
 
+            // subCharges
+
             final Long taxGroupId = JdbcSupport.getLong(rs, "taxGroupId");
             final String taxGroupName = rs.getString("taxGroupName");
             TaxGroupData taxGroupData = null;
@@ -365,7 +371,7 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
 
             return ChargeData.instance(id, name, amount, currency, chargeTimeType, chargeAppliesToType, chargeCalculationType,
                     chargePaymentMode, feeOnMonthDay, feeInterval, penalty, active, minCap, maxCap, feeFrequencyType, glAccountData,
-                    taxGroupData);
+                    taxGroupData, isParent, null);
         }
     }
 
@@ -382,6 +388,33 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         sql += " order by c.name ";
 
         return this.jdbcTemplate.query(sql, rm, new Object[] { ChargeAppliesTo.SAVINGS.getValue() });
+    }
+
+    /**
+     * Method returning all charges except parent
+     *
+     * @return
+     */
+    @Override
+    public Collection<ChargeData> retrieveNotParentCharges() {
+        final ChargeMapper rm = new ChargeMapper();
+        String sql = "select " + rm.chargeSchema() + " where c.is_parent=false and c.is_active=true ";
+        sql += " order by c.name ";
+        return this.jdbcTemplate.query(sql, rm, new Object[] {});
+    }
+
+    /**
+     * Method returning sub charges for a parentCharges
+     *
+     * @return
+     */
+
+    @Override
+    public Collection<ChargeData> retrieveSubCharges(Long parentId) {
+        final ChargeMapper rm = new ChargeMapper();
+        String sql = "select " + rm.chargeSchema() + "where c.parent_id = ?";
+        sql += " order by c.name";
+        return this.jdbcTemplate.query(sql, rm, new Object[] { parentId });
     }
 
     @Override
@@ -402,7 +435,14 @@ public class ChargeReadPlatformServiceImpl implements ChargeReadPlatformService 
         String sql = "select " + rm.savingsProductChargeSchema() + " where c.is_deleted=0 and c.is_active=1 and spc.savings_product_id=? ";
         sql += addInClauseToSQL_toLimitChargesMappedToOffice_ifOfficeSpecificProductsEnabled();
 
-        return this.jdbcTemplate.query(sql, rm, new Object[] { savingsProductId });
+        Collection<ChargeData> savingsCharge = this.jdbcTemplate.query(sql, rm, new Object[] { savingsProductId });
+        for (ChargeData charge : savingsCharge) {
+            if (charge.isParent()) {
+                Collection<ChargeData> subCharges = this.retrieveSubCharges(charge.getId());
+                charge.setSubCharges(subCharges);
+            }
+        }
+        return savingsCharge;
     }
 
     @Override

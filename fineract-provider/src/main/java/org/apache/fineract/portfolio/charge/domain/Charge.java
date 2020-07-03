@@ -29,6 +29,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import org.apache.fineract.accounting.glaccount.data.GLAccountData;
@@ -53,6 +54,10 @@ import org.joda.time.MonthDay;
 @Entity
 @Table(name = "m_charge", uniqueConstraints = { @UniqueConstraint(columnNames = { "name" }, name = "name") })
 public class Charge extends AbstractPersistableCustom {
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "parent_id")
+    private Charge parent;
 
     @Column(name = "name", length = 100)
     private String name;
@@ -110,6 +115,13 @@ public class Charge extends AbstractPersistableCustom {
     @JoinColumn(name = "tax_group_id")
     private TaxGroup taxGroup;
 
+    @Column(name = "is_parent")
+    private boolean isParent;
+
+    @OneToMany
+    @JoinColumn(name = "parent_id")
+    private List<Charge> subCharges = new ArrayList<>();
+
     public static Charge fromJson(final JsonCommand command, final GLAccount account, final TaxGroup taxGroup) {
         final String name = command.stringValueOfParameterNamed("name");
         final BigDecimal amount = command.bigDecimalValueOfParameterNamed("amount");
@@ -130,9 +142,12 @@ public class Charge extends AbstractPersistableCustom {
         final BigDecimal minCap = command.bigDecimalValueOfParameterNamed("minCap");
         final BigDecimal maxCap = command.bigDecimalValueOfParameterNamed("maxCap");
         final Integer feeFrequency = command.integerValueOfParameterNamed("feeFrequency");
-
+        boolean isParent = false;
+        if (command.hasParameter("subCharges")) {
+            isParent = true;
+        }
         return new Charge(name, amount, currencyCode, chargeAppliesTo, chargeTimeType, chargeCalculationType, penalty, active, paymentMode,
-                feeOnMonthDay, feeInterval, minCap, maxCap, feeFrequency, account, taxGroup);
+                feeOnMonthDay, feeInterval, minCap, maxCap, feeFrequency, account, taxGroup, isParent);
     }
 
     protected Charge() {}
@@ -140,7 +155,7 @@ public class Charge extends AbstractPersistableCustom {
     private Charge(final String name, final BigDecimal amount, final String currencyCode, final ChargeAppliesTo chargeAppliesTo,
             final ChargeTimeType chargeTime, final ChargeCalculationType chargeCalculationType, final boolean penalty, final boolean active,
             final ChargePaymentMode paymentMode, final MonthDay feeOnMonthDay, final Integer feeInterval, final BigDecimal minCap,
-            final BigDecimal maxCap, final Integer feeFrequency, final GLAccount account, final TaxGroup taxGroup) {
+            final BigDecimal maxCap, final Integer feeFrequency, final GLAccount account, final TaxGroup taxGroup, final boolean isParent) {
         this.name = name;
         this.amount = amount;
         this.currencyCode = currencyCode;
@@ -152,6 +167,8 @@ public class Charge extends AbstractPersistableCustom {
         this.account = account;
         this.taxGroup = taxGroup;
         this.chargePaymentMode = paymentMode == null ? null : paymentMode.getValue();
+
+        this.isParent = isParent;
 
         final List<ApiParameterError> dataValidationErrors = new ArrayList<>();
         final DataValidatorBuilder baseDataValidator = new DataValidatorBuilder(dataValidationErrors).resource("charges");
@@ -178,6 +195,7 @@ public class Charge extends AbstractPersistableCustom {
             }
 
             if (!(ChargeTimeType.fromInt(getChargeTimeType()).isWithdrawalFee()
+                    || ChargeTimeType.fromInt(getChargeTimeType()).isSavingsInternalTransfer()
                     || ChargeTimeType.fromInt(getChargeTimeType()).isSavingsNoActivityFee())
                     && ChargeCalculationType.fromInt(getChargeCalculation()).isPercentageOfAmount()) {
                 baseDataValidator.reset().parameter("chargeCalculationType").value(this.chargeCalculation)
@@ -288,6 +306,22 @@ public class Charge extends AbstractPersistableCustom {
 
     public BigDecimal getMaxCap() {
         return this.maxCap;
+    }
+
+    public boolean isParent() {
+        return this.isParent;
+    }
+
+    public void setParent(boolean parent) {
+        this.isParent = parent;
+    }
+
+    public List<Charge> getSubCharges() {
+        return this.subCharges;
+    }
+
+    public void setSubCharges(List<Charge> subCharges) {
+        this.subCharges = subCharges;
     }
 
     public Map<String, Object> update(final JsonCommand command) {
@@ -527,11 +561,10 @@ public class Charge extends AbstractPersistableCustom {
         if (this.taxGroup != null) {
             taxGroupData = TaxGroupData.lookup(taxGroup.getId(), taxGroup.getName());
         }
-
         final CurrencyData currency = new CurrencyData(this.currencyCode, null, 0, 0, null, null);
         return ChargeData.instance(getId(), this.name, this.amount, currency, chargeTimeType, chargeAppliesTo, chargeCalculationType,
                 chargePaymentmode, getFeeOnMonthDay(), this.feeInterval, this.penalty, this.active, this.minCap, this.maxCap,
-                feeFrequencyType, accountData, taxGroupData);
+                feeFrequencyType, accountData, taxGroupData, this.isParent, null);
     }
 
     public Integer getChargePaymentMode() {
@@ -605,6 +638,14 @@ public class Charge extends AbstractPersistableCustom {
 
     public void setTaxGroup(TaxGroup taxGroup) {
         this.taxGroup = taxGroup;
+    }
+
+    public Charge getCharge() {
+        return this.parent;
+    }
+
+    public void setCharge(Charge charge) {
+        this.parent = charge;
     }
 
     @Override

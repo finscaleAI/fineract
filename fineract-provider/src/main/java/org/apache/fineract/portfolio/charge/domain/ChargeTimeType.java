@@ -37,7 +37,8 @@ public enum ChargeTimeType {
     SHAREACCOUNT_ACTIVATION(13, "chargeTimeType.activation"), // only for loan
     SHARE_PURCHASE(14, "chargeTimeType.sharespurchase"), SHARE_REDEEM(15, "chargeTimeType.sharesredeem"),
 
-    SAVINGS_NOACTIVITY_FEE(16, "chargeTimeType.savingsNoActivityFee");
+    SAVINGS_NOACTIVITY_FEE(16, "chargeTimeType.savingsNoActivityFee"), SAVINGS_INTERNAL_TRANSFER(17,
+            "chargeTimeType.savingsInternalTransfer");
 
     private final Integer value;
     private final String code;
@@ -70,7 +71,7 @@ public enum ChargeTimeType {
         return new Integer[] { ChargeTimeType.SPECIFIED_DUE_DATE.getValue(), ChargeTimeType.SAVINGS_ACTIVATION.getValue(),
                 ChargeTimeType.SAVINGS_CLOSURE.getValue(), ChargeTimeType.WITHDRAWAL_FEE.getValue(), ChargeTimeType.ANNUAL_FEE.getValue(),
                 ChargeTimeType.MONTHLY_FEE.getValue(), ChargeTimeType.OVERDRAFT_FEE.getValue(), ChargeTimeType.WEEKLY_FEE.getValue(),
-                ChargeTimeType.SAVINGS_NOACTIVITY_FEE.getValue() };
+                ChargeTimeType.SAVINGS_NOACTIVITY_FEE.getValue(), ChargeTimeType.SAVINGS_INTERNAL_TRANSFER.getValue() };
     }
 
     public static Object[] validClientValues() {
@@ -134,6 +135,9 @@ public enum ChargeTimeType {
                 case 16:
                     chargeTimeType = SAVINGS_NOACTIVITY_FEE;
                 break;
+                case 17:
+                    chargeTimeType = SAVINGS_INTERNAL_TRANSFER;
+                break;
                 default:
                     chargeTimeType = INVALID;
                 break;
@@ -152,6 +156,10 @@ public enum ChargeTimeType {
 
     public boolean isSavingsActivation() {
         return this.value.equals(ChargeTimeType.SAVINGS_ACTIVATION.getValue());
+    }
+
+    public boolean isSavingsInternalTransfer() {
+        return this.value.equals(ChargeTimeType.SAVINGS_INTERNAL_TRANSFER.getValue());
     }
 
     public boolean isSavingsClosure() {
@@ -196,7 +204,7 @@ public enum ChargeTimeType {
 
     public boolean isAllowedSavingsChargeTime() {
         return isOnSpecifiedDueDate() || isSavingsActivation() || isSavingsClosure() || isWithdrawalFee() || isAnnualFee() || isMonthlyFee()
-                || isWeeklyFee() || isOverdraftFee() || isSavingsNoActivityFee();
+                || isWeeklyFee() || isOverdraftFee() || isSavingsNoActivityFee() || isSavingsInternalTransfer();
     }
 
     public boolean isOverdraftFee() {

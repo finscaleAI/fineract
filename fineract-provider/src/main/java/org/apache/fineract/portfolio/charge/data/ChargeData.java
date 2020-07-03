@@ -77,6 +77,10 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
     private final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions;
     private final Collection<TaxGroupData> taxGroupOptions;
 
+    private final boolean isParent;
+
+    private Collection<ChargeData> subCharges;
+
     public static ChargeData template(final Collection<CurrencyData> currencyOptions,
             final List<EnumOptionData> chargeCalculationTypeOptions, final List<EnumOptionData> chargeAppliesToOptions,
             final List<EnumOptionData> chargeTimeTypeOptions, final List<EnumOptionData> chargePaymentModeOptions,
@@ -85,16 +89,17 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
             final List<EnumOptionData> clientChargeCalculationTypeOptions, final List<EnumOptionData> clientChargeTimeTypeOptions,
             final List<EnumOptionData> feeFrequencyOptions, final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions,
             final Collection<TaxGroupData> taxGroupOptions, final List<EnumOptionData> shareChargeCalculationTypeOptions,
-            final List<EnumOptionData> shareChargeTimeTypeOptions) {
+            final List<EnumOptionData> shareChargeTimeTypeOptions, final Collection<ChargeData> subCharges) {
         final GLAccountData account = null;
         final TaxGroupData taxGroupData = null;
+        final boolean isParent = false;
 
         return new ChargeData(null, null, null, null, null, null, null, null, false, false, taxGroupData, currencyOptions,
                 chargeCalculationTypeOptions, chargeAppliesToOptions, chargeTimeTypeOptions, chargePaymentModeOptions,
                 loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions, savingsChargeCalculationTypeOptions,
                 savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions, clientChargeTimeTypeOptions, null, null, null, null, null,
                 feeFrequencyOptions, account, incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions,
-                shareChargeTimeTypeOptions);
+                shareChargeTimeTypeOptions, isParent, subCharges);
     }
 
     public static ChargeData withTemplate(final ChargeData charge, final ChargeData template) {
@@ -106,14 +111,14 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
                 template.clientChargeCalculationTypeOptions, template.clientChargeTimeTypeOptions, charge.feeOnMonthDay, charge.feeInterval,
                 charge.minCap, charge.maxCap, charge.feeFrequency, template.feeFrequencyOptions, charge.incomeOrLiabilityAccount,
                 template.incomeOrLiabilityAccountOptions, template.taxGroupOptions, template.shareChargeCalculationTypeOptions,
-                template.shareChargeTimeTypeOptions);
+                template.shareChargeTimeTypeOptions, template.isParent, template.subCharges);
     }
 
     public static ChargeData instance(final Long id, final String name, final BigDecimal amount, final CurrencyData currency,
             final EnumOptionData chargeTimeType, final EnumOptionData chargeAppliesTo, final EnumOptionData chargeCalculationType,
             final EnumOptionData chargePaymentMode, final MonthDay feeOnMonthDay, final Integer feeInterval, final boolean penalty,
             final boolean active, final BigDecimal minCap, final BigDecimal maxCap, final EnumOptionData feeFrequency,
-            final GLAccountData accountData, TaxGroupData taxGroupData) {
+            final GLAccountData accountData, TaxGroupData taxGroupData, final boolean isParent, final Collection<ChargeData> subCharges) {
 
         final Collection<CurrencyData> currencyOptions = null;
         final List<EnumOptionData> chargeCalculationTypeOptions = null;
@@ -136,10 +141,11 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
                 chargePaymentModeOptions, loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions,
                 savingsChargeCalculationTypeOptions, savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions,
                 clientChargeTimeTypeOptions, feeOnMonthDay, feeInterval, minCap, maxCap, feeFrequency, feeFrequencyOptions, accountData,
-                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions);
+                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions, isParent,
+                subCharges);
     }
 
-    public static ChargeData lookup(final Long id, final String name, final boolean isPenalty) {
+    public static ChargeData lookup(final Long id, final String name, final boolean isPenalty, final boolean isParent) {
         final BigDecimal amount = null;
         final CurrencyData currency = null;
         final EnumOptionData chargeTimeType = null;
@@ -171,12 +177,14 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
         final List<EnumOptionData> shareChargeTimeTypeOptions = null;
         final TaxGroupData taxGroupData = null;
         final Collection<TaxGroupData> taxGroupOptions = null;
+        final Collection<ChargeData> subCharges = null;
         return new ChargeData(id, name, amount, currency, chargeTimeType, chargeAppliesTo, chargeCalculationType, chargePaymentMode,
                 penalty, active, taxGroupData, currencyOptions, chargeCalculationTypeOptions, chargeAppliesToOptions, chargeTimeTypeOptions,
                 chargePaymentModeOptions, loansChargeCalculationTypeOptions, loansChargeTimeTypeOptions,
                 savingsChargeCalculationTypeOptions, savingsChargeTimeTypeOptions, clientChargeCalculationTypeOptions,
                 clientChargeTimeTypeOptions, feeOnMonthDay, feeInterval, minCap, maxCap, feeFrequency, feeFrequencyOptions, account,
-                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions);
+                incomeOrLiabilityAccountOptions, taxGroupOptions, shareChargeCalculationTypeOptions, shareChargeTimeTypeOptions, isParent,
+                subCharges);
     }
 
     private ChargeData(final Long id, final String name, final BigDecimal amount, final CurrencyData currency,
@@ -191,7 +199,8 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
             final BigDecimal minCap, final BigDecimal maxCap, final EnumOptionData feeFrequency,
             final List<EnumOptionData> feeFrequencyOptions, final GLAccountData account,
             final Map<String, List<GLAccountData>> incomeOrLiabilityAccountOptions, final Collection<TaxGroupData> taxGroupOptions,
-            final List<EnumOptionData> shareChargeCalculationTypeOptions, final List<EnumOptionData> shareChargeTimeTypeOptions) {
+            final List<EnumOptionData> shareChargeCalculationTypeOptions, final List<EnumOptionData> shareChargeTimeTypeOptions,
+            final boolean isParent, final Collection<ChargeData> subCharges) {
         this.id = id;
         this.name = name;
         this.amount = amount;
@@ -225,6 +234,8 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
         this.taxGroupOptions = taxGroupOptions;
         this.shareChargeCalculationTypeOptions = shareChargeCalculationTypeOptions;
         this.shareChargeTimeTypeOptions = shareChargeTimeTypeOptions;
+        this.isParent = isParent;
+        this.subCharges = subCharges;
     }
 
     @Override
@@ -305,6 +316,10 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
         return this.penalty;
     }
 
+    public boolean isParent() {
+        return this.isParent;
+    }
+
     public boolean isOverdueInstallmentCharge() {
         boolean isOverdueInstallmentCharge = false;
         if (this.chargeTimeType != null) {
@@ -324,4 +339,13 @@ public final class ChargeData implements Comparable<ChargeData>, Serializable {
     public CurrencyData getCurrency() {
         return currency;
     }
+
+    public Collection<ChargeData> setSubCharges(Collection<ChargeData> subCharges) {
+        return this.subCharges = subCharges;
+    }
+
+    public Collection<ChargeData> getSubCharges() {
+        return this.subCharges;
+    }
+
 }

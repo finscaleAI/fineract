@@ -54,6 +54,10 @@ public final class SavingsAccountTransactionData implements Serializable {
     private final String submittedByUsername;
     private final String note;
 
+    private boolean isParent;
+
+    private Collection<SavingsAccountTransactionData> subTransactions;
+
     // templates
     final Collection<PaymentTypeData> paymentTypeOptions;
 
@@ -139,11 +143,11 @@ public final class SavingsAccountTransactionData implements Serializable {
             final PaymentDetailData paymentDetailData, final Long savingsId, final String savingsAccountNo, final LocalDate date,
             final CurrencyData currency, final BigDecimal amount, final BigDecimal outstandingChargeAmount, final BigDecimal runningBalance,
             final boolean reversed, final AccountTransferData transfer, final LocalDate submittedOnDate, final boolean interestedPostedAsOn,
-            final String submittedByUsername, final String note) {
+            final String submittedByUsername, final String note, final boolean isParent) {
         final Collection<PaymentTypeData> paymentTypeOptions = null;
         return new SavingsAccountTransactionData(id, transactionType, paymentDetailData, savingsId, savingsAccountNo, date, currency,
                 amount, outstandingChargeAmount, runningBalance, reversed, transfer, paymentTypeOptions, submittedOnDate,
-                interestedPostedAsOn, submittedByUsername, note);
+                interestedPostedAsOn, submittedByUsername, note, isParent);
     }
 
     public static SavingsAccountTransactionData template(final Long savingsId, final String savingsAccountNo,
@@ -182,14 +186,15 @@ public final class SavingsAccountTransactionData implements Serializable {
             final boolean interestedPostedAsOn, final String submittedByUsername, final String note) {
 
         this(id, transactionType, paymentDetailData, savingsId, savingsAccountNo, date, currency, amount, outstandingChargeAmount,
-                runningBalance, reversed, transfer, paymentTypeOptions, null, interestedPostedAsOn, submittedByUsername, note);
+                runningBalance, reversed, transfer, paymentTypeOptions, null, interestedPostedAsOn, submittedByUsername, note, false);
     }
 
     private SavingsAccountTransactionData(final Long id, final SavingsAccountTransactionEnumData transactionType,
             final PaymentDetailData paymentDetailData, final Long savingsId, final String savingsAccountNo, final LocalDate date,
             final CurrencyData currency, final BigDecimal amount, final BigDecimal outstandingChargeAmount, final BigDecimal runningBalance,
             final boolean reversed, final AccountTransferData transfer, final Collection<PaymentTypeData> paymentTypeOptions,
-            final LocalDate submittedOnDate, final boolean interestedPostedAsOn, final String submittedByUsername, final String note) {
+            final LocalDate submittedOnDate, final boolean interestedPostedAsOn, final String submittedByUsername, final String note,
+            final boolean isParent) {
         this.id = id;
         this.transactionType = transactionType;
         this.paymentDetailData = paymentDetailData;
@@ -207,6 +212,7 @@ public final class SavingsAccountTransactionData implements Serializable {
         this.interestedPostedAsOn = interestedPostedAsOn;
         this.submittedByUsername = submittedByUsername;
         this.note = note;
+        this.isParent = isParent;
     }
 
     public static SavingsAccountTransactionData withWithDrawalTransactionDetails(
@@ -224,5 +230,17 @@ public final class SavingsAccountTransactionData implements Serializable {
                 savingsAccountTransactionData.transfer, savingsAccountTransactionData.paymentTypeOptions,
                 savingsAccountTransactionData.interestedPostedAsOn, savingsAccountTransactionData.submittedByUsername,
                 savingsAccountTransactionData.note);
+    }
+
+    public boolean isParent() {
+        return isParent;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setSubTransactions(Collection<SavingsAccountTransactionData> subTransactions) {
+        this.subTransactions = subTransactions;
     }
 }

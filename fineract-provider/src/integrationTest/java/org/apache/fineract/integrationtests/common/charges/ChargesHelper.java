@@ -56,6 +56,7 @@ public class ChargesHelper {
     private static final Integer SHARE_REDEEM = 15;
 
     private static final Integer CHARGE_SAVINGS_NO_ACTIVITY_FEE = 16;
+    private static final Integer INTERNAL_SAVINGS_TRANSFER_FEE = 17;
 
     private static final Integer CHARGE_CLIENT_SPECIFIED_DUE_DATE = 1;
 
@@ -98,6 +99,10 @@ public class ChargesHelper {
 
     public static String getSavingsWithdrawalFeeJSON() {
         return getSavingsJSON(AMOUNT, CURRENCY_CODE, ChargeTimeType.WITHDRAWAL_FEE);
+    }
+
+    public static String getSavingsInternalTransferFeeJSON() {
+        return getSavingsJSON(AMOUNT, CURRENCY_CODE, ChargeTimeType.SAVINGS_INTERNAL_TRANSFER);
     }
 
     public static String getSavingsJSON(String amount, String currencyCode, ChargeTimeType timeType) {
