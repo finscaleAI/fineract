@@ -187,6 +187,14 @@ public class LoanProduct extends AbstractPersistableCustom {
     @Column(name = "is_equal_amortization", nullable = false)
     private boolean isEqualAmortization = false;
 
+    @Column(name = "start_date_semi_month", nullable = true)
+    @Temporal(TemporalType.DATE)
+    private Date firstDateForSemi;
+
+    @Column(name = "close_date_semi_month", nullable = true)
+    @Temporal(TemporalType.DATE)
+    private Date secondDateForSemi;
+
     public static LoanProduct assembleFromJson(final Fund fund, final LoanTransactionProcessingStrategy loanTransactionProcessingStrategy,
             final List<Charge> productCharges, final JsonCommand command, final AprCalculator aprCalculator, FloatingRate floatingRate,
             final List<Rate> productRates) {
@@ -345,6 +353,11 @@ public class LoanProduct extends AbstractPersistableCustom {
                 ? command.booleanPrimitiveValueOfParameterNamed(LoanProductConstants.IS_EQUAL_AMORTIZATION_PARAM)
                 : false;
 
+        // Semi Monthly Details
+
+        final LocalDate firstDateForSemiPart = command.localDateValueOfParameterNamed("semiMonthFirstDate");
+        final LocalDate secondDateForSemiPart = command.localDateValueOfParameterNamed("semiMonthSecondDate");
+
         return new LoanProduct(fund, loanTransactionProcessingStrategy, name, shortName, description, currency, principal, minPrincipal,
                 maxPrincipal, interestRatePerPeriod, minInterestRatePerPeriod, maxInterestRatePerPeriod, interestFrequencyType,
                 annualInterestRate, interestMethod, interestCalculationPeriodMethod, allowPartialPeriodInterestCalcualtion, repaymentEvery,
@@ -359,7 +372,7 @@ public class LoanProduct extends AbstractPersistableCustom {
                 floatingRate, interestRateDifferential, minDifferentialLendingRate, maxDifferentialLendingRate,
                 defaultDifferentialLendingRate, isFloatingInterestRateCalculationAllowed, isVariableInstallmentsAllowed,
                 minimumGapBetweenInstallments, maximumGapBetweenInstallments, syncExpectedWithDisbursementDate, canUseForTopup,
-                isEqualAmortization, productRates);
+                isEqualAmortization, productRates, firstDateForSemiPart, secondDateForSemiPart);
 
     }
 
@@ -594,7 +607,7 @@ public class LoanProduct extends AbstractPersistableCustom {
             Boolean isFloatingInterestRateCalculationAllowed, final Boolean isVariableInstallmentsAllowed,
             final Integer minimumGapBetweenInstallments, final Integer maximumGapBetweenInstallments,
             final boolean syncExpectedWithDisbursementDate, final boolean canUseForTopup, final boolean isEqualAmortization,
-            final List<Rate> rates) {
+            final List<Rate> rates, final LocalDate firstSemiMonthDate, final LocalDate secondSemiMonthDate) {
         this.fund = fund;
         this.transactionProcessingStrategy = transactionProcessingStrategy;
         this.name = name.trim();
@@ -676,6 +689,10 @@ public class LoanProduct extends AbstractPersistableCustom {
         if (rates != null) {
             this.rates = rates;
         }
+
+        // Semi-month details
+        this.firstDateForSemi = firstSemiMonthDate.toDate();
+        this.secondDateForSemi = secondSemiMonthDate.toDate();
     }
 
     public MonetaryCurrency getCurrency() {
@@ -1187,6 +1204,16 @@ public class LoanProduct extends AbstractPersistableCustom {
             startLocalDate = LocalDate.ofInstant(this.startDate.toInstant(), DateUtils.getDateTimeZoneOfTenant());
         }
         return startLocalDate;
+    }
+
+    public LocalDate getFirstSemiDate() {
+        LocalDate firstDateForSemi = null;
+        return firstDateForSemi = LocalDate.fromDateFields(this.firstDateForSemi);
+    }
+
+    public LocalDate getSecondSemiDate() {
+        LocalDate secondDateForSemi = null;
+        return secondDateForSemi = LocalDate.fromDateFields(this.secondDateForSemi);
     }
 
     public LocalDate getCloseDate() {
