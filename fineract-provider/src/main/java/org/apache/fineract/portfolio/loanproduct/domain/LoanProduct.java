@@ -916,6 +916,36 @@ public class LoanProduct extends AbstractPersistableCustom {
             }
         }
 
+        final String semiMonthFirstDateParamName = "semiMonthFirstDate";
+        if (command.isChangeInLocalDateParameterNamed(semiMonthFirstDateParamName, getFirstSemiDate())) {
+            final String valueAsInput = command.stringValueOfParameterNamed(semiMonthFirstDateParamName);
+            actualChanges.put(semiMonthFirstDateParamName, valueAsInput);
+            actualChanges.put(dateFormatParamName, dateFormatAsInput);
+            actualChanges.put(localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(semiMonthFirstDateParamName);
+            if (newValue != null) {
+                this.firstDateForSemi = newValue.toDate();
+            } else {
+                this.firstDateForSemi = null;
+            }
+        }
+
+        final String semiMonthSecondDateParamName = "semiMonthSecondDate";
+        if (command.isChangeInLocalDateParameterNamed(semiMonthSecondDateParamName, getSecondSemiDate())) {
+            final String valueAsInput = command.stringValueOfParameterNamed(semiMonthSecondDateParamName);
+            actualChanges.put(semiMonthSecondDateParamName, valueAsInput);
+            actualChanges.put(semiMonthSecondDateParamName, dateFormatAsInput);
+            actualChanges.put(localeParamName, localeAsInput);
+
+            final LocalDate newValue = command.localDateValueOfParameterNamed(semiMonthSecondDateParamName);
+            if (newValue != null) {
+                this.secondDateForSemi = newValue.toDate();
+            } else {
+                this.secondDateForSemi = null;
+            }
+        }
+
         final String externalIdTypeParamName = "externalId";
         if (command.isChangeInStringParameterNamed(externalIdTypeParamName, this.externalId)) {
             final String newValue = command.stringValueOfParameterNamed(externalIdTypeParamName);

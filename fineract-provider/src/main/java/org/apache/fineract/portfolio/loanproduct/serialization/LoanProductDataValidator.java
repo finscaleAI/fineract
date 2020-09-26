@@ -1024,7 +1024,7 @@ public final class LoanProductDataValidator {
         if (this.fromApiJsonHelper.parameterExists("repaymentFrequencyType", element)) {
             final Integer repaymentFrequencyType = this.fromApiJsonHelper.extractIntegerNamed("repaymentFrequencyType", element,
                     Locale.getDefault());
-            baseDataValidator.reset().parameter("repaymentFrequencyType").value(repaymentFrequencyType).notNull().inMinMaxRange(0, 3);
+            baseDataValidator.reset().parameter("repaymentFrequencyType").value(repaymentFrequencyType).notNull().inMinMaxRange(0, 6);
         }
 
         if (this.fromApiJsonHelper.parameterExists("transactionProcessingStrategyId", element)) {
