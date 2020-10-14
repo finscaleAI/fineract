@@ -73,6 +73,7 @@ public class DefaultScheduledDateGenerator implements ScheduledDateGenerator {
         } else {
             LocalDate seedDate = null;
             String reccuringString = null;
+            boolean isLeapYear = this.isLeapYear(lastRepaymentDate.getYear());
             Calendar currentCalendar = loanApplicationTerms.getLoanCalendar();
             if (loanApplicationTerms.getRepaymentPeriodFrequencyType().isSemiMonthly() && !isFirstRepayment) {
                 int difference = 0;
@@ -84,6 +85,9 @@ public class DefaultScheduledDateGenerator implements ScheduledDateGenerator {
                     if (lastRepaymentDate.getMonthOfYear() == 2) {
                         difference = lastRepaymentDate.getDayOfMonth() - loanApplicationTerms.getFirstDateForSemi().getDayOfMonth();
                         difference = difference + 2;
+                        if (isLeapYear) {
+                            difference = difference - 1;
+                        }
                     }
                 }
                 dueRepaymentPeriodDate = getRepaymentPeriodDate(loanApplicationTerms.getRepaymentPeriodFrequencyType(),
@@ -91,7 +95,11 @@ public class DefaultScheduledDateGenerator implements ScheduledDateGenerator {
                 if (dueRepaymentPeriodDate.getDayOfMonth() < loanApplicationTerms.getFirstDateForSemi().getDayOfMonth()) {
                     if (lastRepaymentDate.getMonthOfYear() == 2
                             && dueRepaymentPeriodDate.getDayOfMonth() < loanApplicationTerms.getSecondDateForSemi().getDayOfMonth()) {
-                        dueRepaymentPeriodDate = dueRepaymentPeriodDate.minusDays(2);
+                        if (isLeapYear) {
+                            dueRepaymentPeriodDate = dueRepaymentPeriodDate.minusDays(1);
+                        } else {
+                            dueRepaymentPeriodDate = dueRepaymentPeriodDate.minusDays(2);
+                        }
                     } else {
                         dueRepaymentPeriodDate = dueRepaymentPeriodDate.plusDays(1);
                     }
@@ -136,6 +144,18 @@ public class DefaultScheduledDateGenerator implements ScheduledDateGenerator {
         }
 
         return dueRepaymentPeriodDate;
+    }
+
+    public boolean isLeapYear(int year) {
+        if (year % 4 == 0) {
+            if (year % 100 == 0) {
+                return year % 400 == 0;
+            } else {
+                return true;
+            }
+        } else {
+            return false;
+        }
     }
 
     @Override
