@@ -691,8 +691,8 @@ public class LoanProduct extends AbstractPersistableCustom {
         }
 
         // Semi-month details
-        this.firstDateForSemi = firstSemiMonthDate.toDate();
-        this.secondDateForSemi = secondSemiMonthDate.toDate();
+        this.firstDateForSemi = firstSemiMonthDate == null ? null : firstSemiMonthDate.toDate();
+        this.secondDateForSemi = secondSemiMonthDate == null ? null : secondSemiMonthDate.toDate();
     }
 
     public MonetaryCurrency getCurrency() {
