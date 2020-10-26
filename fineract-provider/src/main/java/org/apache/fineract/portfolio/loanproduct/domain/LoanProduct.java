@@ -691,8 +691,10 @@ public class LoanProduct extends AbstractPersistableCustom {
         }
 
         // Semi-month details
-        this.firstDateForSemi = firstSemiMonthDate == null ? null : firstSemiMonthDate.toDate();
-        this.secondDateForSemi = secondSemiMonthDate == null ? null : secondSemiMonthDate.toDate();
+        this.firstDateForSemi = firstSemiMonthDate == null ? null
+                : Date.from(firstSemiMonthDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        this.secondDateForSemi = secondSemiMonthDate == null ? null
+                : Date.from(secondSemiMonthDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
     }
 
     public MonetaryCurrency getCurrency() {
@@ -925,7 +927,7 @@ public class LoanProduct extends AbstractPersistableCustom {
 
             final LocalDate newValue = command.localDateValueOfParameterNamed(semiMonthFirstDateParamName);
             if (newValue != null) {
-                this.firstDateForSemi = newValue.toDate();
+                this.firstDateForSemi = java.sql.Date.valueOf(newValue);
             } else {
                 this.firstDateForSemi = null;
             }
@@ -940,7 +942,7 @@ public class LoanProduct extends AbstractPersistableCustom {
 
             final LocalDate newValue = command.localDateValueOfParameterNamed(semiMonthSecondDateParamName);
             if (newValue != null) {
-                this.secondDateForSemi = newValue.toDate();
+                this.secondDateForSemi = java.sql.Date.valueOf(newValue);
             } else {
                 this.secondDateForSemi = null;
             }
@@ -1238,12 +1240,12 @@ public class LoanProduct extends AbstractPersistableCustom {
 
     public LocalDate getFirstSemiDate() {
         LocalDate firstDateForSemi = null;
-        return firstDateForSemi = LocalDate.fromDateFields(this.firstDateForSemi);
+        return firstDateForSemi = LocalDate.ofInstant(this.firstDateForSemi.toInstant(), ZoneId.systemDefault());
     }
 
     public LocalDate getSecondSemiDate() {
         LocalDate secondDateForSemi = null;
-        return secondDateForSemi = LocalDate.fromDateFields(this.secondDateForSemi);
+        return secondDateForSemi = LocalDate.ofInstant(this.secondDateForSemi.toInstant(), ZoneId.systemDefault());
     }
 
     public LocalDate getCloseDate() {
