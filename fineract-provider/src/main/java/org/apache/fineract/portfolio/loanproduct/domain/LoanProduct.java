@@ -1239,13 +1239,17 @@ public class LoanProduct extends AbstractPersistableCustom {
     }
 
     public LocalDate getFirstSemiDate() {
-        LocalDate firstDateForSemi = null;
-        return firstDateForSemi = LocalDate.ofInstant(this.firstDateForSemi.toInstant(), ZoneId.systemDefault());
+        if (this.firstDateForSemi != null) {
+            return LocalDate.ofInstant(this.firstDateForSemi.toInstant(), ZoneId.systemDefault());
+        }
+        return null;
     }
 
     public LocalDate getSecondSemiDate() {
-        LocalDate secondDateForSemi = null;
-        return secondDateForSemi = LocalDate.ofInstant(this.secondDateForSemi.toInstant(), ZoneId.systemDefault());
+        if (this.secondDateForSemi != null) {
+            return LocalDate.ofInstant(this.secondDateForSemi.toInstant(), ZoneId.systemDefault());
+        }
+        return null;
     }
 
     public LocalDate getCloseDate() {
