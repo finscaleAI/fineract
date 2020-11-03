@@ -172,19 +172,21 @@ public class LoanImportHandler implements ImportHandler {
                 repaidEveryFrequencyId = "1";
             } else if (repaidEveryFrequency.equalsIgnoreCase("Months")) {
                 repaidEveryFrequencyId = "2";
+            } else if (repaidEveryFrequency.equalsIgnoreCase("Semi Month")) {
+                repaidEveryFrequencyId = "3";
             }
             repaidEveryFrequencyEnums = new EnumOptionData(null, null, repaidEveryFrequencyId);
         }
         Integer loanTerm = ImportHandlerUtils.readAsInt(LoanConstants.LOAN_TERM_COL, row);
-        String loanTermFrequency = ImportHandlerUtils.readAsString(LoanConstants.LOAN_TERM_FREQUENCY_COL, row);
+        String loanTermFrequencyType = ImportHandlerUtils.readAsString(LoanConstants.LOAN_TERM_FREQUENCY_COL, row);
         EnumOptionData loanTermFrequencyEnum = null;
-        if (loanTermFrequency != null) {
+        if (loanTermFrequencyType != null) {
             String loanTermFrequencyId = "";
-            if (loanTermFrequency.equalsIgnoreCase("Days")) {
+            if (loanTermFrequencyType.equalsIgnoreCase("Days")) {
                 loanTermFrequencyId = "0";
-            } else if (loanTermFrequency.equalsIgnoreCase("Weeks")) {
+            } else if (loanTermFrequencyType.equalsIgnoreCase("Weeks")) {
                 loanTermFrequencyId = "1";
-            } else if (loanTermFrequency.equalsIgnoreCase("Months")) {
+            } else if (loanTermFrequencyType.equalsIgnoreCase("Months")) {
                 loanTermFrequencyId = "2";
             }
             loanTermFrequencyEnum = new EnumOptionData(null, null, loanTermFrequencyId);
