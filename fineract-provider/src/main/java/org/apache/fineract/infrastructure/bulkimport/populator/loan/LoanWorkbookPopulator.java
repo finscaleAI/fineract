@@ -168,9 +168,11 @@ public class LoanWorkbookPopulator extends AbstractWorkbookPopulator {
                 DataValidationConstraint.OperatorType.BETWEEN, "=INDIRECT(CONCATENATE(\"MIN_REPAYMENT_\",$E1))",
                 "=INDIRECT(CONCATENATE(\"MAX_REPAYMENT_\",$E1))");
         DataValidationConstraint frequencyConstraint = validationHelper
+                .createExplicitListConstraint(new String[] { "Days", "Weeks", "Months", "Semi Month" });
+        DataValidationConstraint loanTermFrequencyConstraint = validationHelper
                 .createExplicitListConstraint(new String[] { "Days", "Weeks", "Months" });
         DataValidationConstraint loanTermConstraint = validationHelper
-                .createIntegerConstraint(DataValidationConstraint.OperatorType.GREATER_OR_EQUAL, "=$M1*$N1", null);
+                .createIntegerConstraint(DataValidationConstraint.OperatorType.GREATER_OR_EQUAL, "=$M1/$N1", "=$M1*$N1");
         DataValidationConstraint interestFrequencyConstraint = validationHelper
                 .createFormulaListConstraint("INDIRECT(CONCATENATE(\"INTEREST_FREQUENCY_\",$E1))");
         DataValidationConstraint interestConstraint = validationHelper.createDecimalConstraint(
@@ -203,7 +205,7 @@ public class LoanWorkbookPopulator extends AbstractWorkbookPopulator {
         DataValidation loanOfficerValidation = validationHelper.createValidation(loanOfficerNameConstraint, loanOfficerRange);
         DataValidation fundNameValidation = validationHelper.createValidation(fundNameConstraint, fundNameRange);
         DataValidation repaidFrequencyValidation = validationHelper.createValidation(frequencyConstraint, repaidFrequencyRange);
-        DataValidation loanTermFrequencyValidation = validationHelper.createValidation(frequencyConstraint, loanTermFrequencyRange);
+        DataValidation loanTermFrequencyValidation = validationHelper.createValidation(loanTermFrequencyConstraint, loanTermFrequencyRange);
         DataValidation amortizationValidation = validationHelper.createValidation(amortizationConstraint, amortizationRange);
         DataValidation interestMethodValidation = validationHelper.createValidation(interestMethodConstraint, interestMethodRange);
         DataValidation interestCalculationPeriodValidation = validationHelper.createValidation(interestCalculationPeriodConstraint,
@@ -385,8 +387,11 @@ public class LoanWorkbookPopulator extends AbstractWorkbookPopulator {
             writeFormula(LoanConstants.NO_OF_REPAYMENTS_COL, row, "IF(ISERROR(INDIRECT(CONCATENATE(\"NO_REPAYMENT_\",$E" + (rowNo + 1)
                     + "))),\"\",INDIRECT(CONCATENATE(\"NO_REPAYMENT_\",$E" + (rowNo + 1) + ")))");
             writeFormula(LoanConstants.LOAN_TERM_COL, row,
-                    "IF(ISERROR($M" + (rowNo + 1) + "*$N" + (rowNo + 1) + "),\"\",$M" + (rowNo + 1) + "*$N" + (rowNo + 1) + ")");
-            writeFormula(LoanConstants.LOAN_TERM_FREQUENCY_COL, row, "$O" + (rowNo + 1));
+                    "IF(($O" + (rowNo + 1) + "=\"Semi Month\"), " + "(IF(ISERROR($M" + (rowNo + 1) + "/$N" + (rowNo + 1) + "),\"\",$M"
+                            + (rowNo + 1) + "/$N" + (rowNo + 1) + ")), " + "(IF(ISERROR($M" + (rowNo + 1) + "*$N" + (rowNo + 1)
+                            + "),\"\",$M" + (rowNo + 1) + "*$N" + (rowNo + 1) + "))" + ")");
+            writeFormula(LoanConstants.LOAN_TERM_FREQUENCY_COL, row,
+                    "IF(($O" + (rowNo + 1) + "=\"Semi Month\"), \"Months\", $O" + (rowNo + 1) + ")");
             writeFormula(LoanConstants.NOMINAL_INTEREST_RATE_FREQUENCY_COL, row,
                     "IF(ISERROR(INDIRECT(CONCATENATE(\"INTEREST_FREQUENCY_\",$E" + (rowNo + 1)
                             + "))),\"\",INDIRECT(CONCATENATE(\"INTEREST_FREQUENCY_\",$E" + (rowNo + 1) + ")))");

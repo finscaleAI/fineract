@@ -173,7 +173,7 @@ public class LoanImportHandler implements ImportHandler {
             } else if (repaidEveryFrequency.equalsIgnoreCase("Months")) {
                 repaidEveryFrequencyId = "2";
             } else if (repaidEveryFrequency.equalsIgnoreCase("Semi Month")) {
-                repaidEveryFrequencyId = "3";
+                repaidEveryFrequencyId = "5";
             }
             repaidEveryFrequencyEnums = new EnumOptionData(null, null, repaidEveryFrequencyId);
         }
