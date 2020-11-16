@@ -27,48 +27,61 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public class ChargeWorkbookPopulator extends AbstractWorkbookPopulator {
 
-    public ChargeWorkbookPopulator() {
-        //
-    }
+  public ChargeWorkbookPopulator() {
+    //
+  }
 
-    @Override
-    public void populate(Workbook workbook, String dateFormat) {
-        Sheet chargeSheet = workbook.createSheet(TemplatePopulateImportConstants.CHARGE_SHEET_NAME);
-        setLayout(chargeSheet);
-        // setRules(chargeSheet, dateFormat);
-    }
+  @Override
+  public void populate(Workbook workbook, String dateFormat) {
+    Sheet chargeSheet =
+        workbook.createSheet(TemplatePopulateImportConstants.CHARGE_SHEET_NAME);
+    setLayout(chargeSheet);
+    // setRules(chargeSheet, dateFormat);
+  }
 
-    private void setLayout(final Sheet worksheet) {
-        Row rowHeader = worksheet.createRow(TemplatePopulateImportConstants.ROWHEADER_INDEX);
-        worksheet.setColumnWidth(0, TemplatePopulateImportConstants.SMALL_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_NAME_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_AMOUNT_COL, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
-        // worksheet.setColumnWidth(ChargeConstants.CHARGE_DUE_DATE_COL,
-        // TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_TIME_TYPE_COL, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+  private void setLayout(final Sheet worksheet) {
+    Row rowHeader =
+        worksheet.createRow(TemplatePopulateImportConstants.ROWHEADER_INDEX);
+    worksheet.setColumnWidth(0, TemplatePopulateImportConstants.SMALL_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_NAME_COL,
+                             TemplatePopulateImportConstants.SMALL_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_AMOUNT_COL,
+                             TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_CALCULATION_TYPE_COL,
+                             TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+    // worksheet.setColumnWidth(ChargeConstants.CHARGE_DUE_DATE_COL,
+    // TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_TIME_TYPE_COL,
+                             TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
 
-        writeString(0, rowHeader, "ID");
-        writeString(ChargeConstants.CHARGE_NAME_COL, rowHeader, "Charge Name*");
-        writeString(ChargeConstants.CHARGE_AMOUNT_COL, rowHeader, "Charge Amount*");
-        writeString(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, rowHeader, "Charge Calculation Type*");
-        // writeString(ChargeConstants.CHARGE_DUE_DATE_COL, rowHeader, "Charge Due Date*");
-        writeString(ChargeConstants.CHARGE_TIME_TYPE_COL, rowHeader, "Charge Time Type*");
-    }
+    writeString(0, rowHeader, "ID");
+    writeString(ChargeConstants.CHARGE_NAME_COL, rowHeader, "Charge Name*");
+    writeString(ChargeConstants.CHARGE_AMOUNT_COL, rowHeader, "Charge Amount*");
+    writeString(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, rowHeader,
+                "Charge Calculation Type*");
+    // writeString(ChargeConstants.CHARGE_DUE_DATE_COL, rowHeader, "Charge Due
+    // Date*");
+    writeString(ChargeConstants.CHARGE_TIME_TYPE_COL, rowHeader,
+                "Charge Time Type*");
+  }
 
-    @SuppressWarnings("unused")
-    private void setRules(Sheet workSheet, final String dateFormat) {
-        // CellRangeAddressList dueDateRange = new CellRangeAddressList(1, SpreadsheetVersion.EXCEL97.getLastRowIndex(),
-        // ChargeConstants.CHARGE_DUE_DATE_COL, ChargeConstants.CHARGE_DUE_DATE_COL);
+  @SuppressWarnings("unused")
+  private void setRules(Sheet workSheet, final String dateFormat) {
+    // CellRangeAddressList dueDateRange = new CellRangeAddressList(1,
+    // SpreadsheetVersion.EXCEL97.getLastRowIndex(),
+    // ChargeConstants.CHARGE_DUE_DATE_COL,
+    // ChargeConstants.CHARGE_DUE_DATE_COL);
 
-        // DataValidationHelper validationHelper = new HSSFDataValidationHelper((HSSFSheet) workSheet);
+    // DataValidationHelper validationHelper = new
+    // HSSFDataValidationHelper((HSSFSheet) workSheet);
 
-        // DataValidationConstraint dueDateConstraint = validationHelper
-        // .createDateConstraint(DataValidationConstraint.OperatorType.GREATER_OR_EQUAL, "=TODAY()", null, dateFormat);
+    // DataValidationConstraint dueDateConstraint = validationHelper
+    // .createDateConstraint(DataValidationConstraint.OperatorType.GREATER_OR_EQUAL,
+    // "=TODAY()", null, dateFormat);
 
-        // DataValidation dueDateValidation = validationHelper.createValidation(dueDateConstraint, dueDateRange);
+    // DataValidation dueDateValidation =
+    // validationHelper.createValidation(dueDateConstraint, dueDateRange);
 
-        // workSheet.addValidationData(dueDateValidation);
-    }
-
+    // workSheet.addValidationData(dueDateValidation);
+  }
 }

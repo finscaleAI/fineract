@@ -28,59 +28,67 @@ import org.apache.poi.ss.usermodel.Workbook;
 
 public class ChargeSheetPopulator extends AbstractWorkbookPopulator {
 
-    private List<ChargeData> charges;
+  private List<ChargeData> charges;
 
-    private static final int ID_COL = 0;
+  private static final int ID_COL = 0;
 
-    public ChargeSheetPopulator(final List<ChargeData> charges) {
-        this.charges = charges;
+  public ChargeSheetPopulator(final List<ChargeData> charges) {
+    this.charges = charges;
+  }
+
+  @Override
+  public void populate(final Workbook workbook, String dateFormat) {
+    int rowIndex = 1;
+    Sheet chargeSheet =
+        workbook.createSheet(TemplatePopulateImportConstants.CHARGE_SHEET_NAME);
+    setLayout(chargeSheet);
+
+    populateCharges(chargeSheet, rowIndex);
+    chargeSheet.protectSheet("");
+  }
+
+  private void populateCharges(Sheet chargeSheet, int rowIndex) {
+    for (ChargeData charge : charges) {
+      Row row = chargeSheet.createRow(rowIndex);
+      writeLong(ID_COL, row, charge.getId());
+      writeString(ChargeConstants.CHARGE_NAME_COL, row,
+                  charge.getName().trim().replaceAll("[ )(]", "_"));
+      writeBigDecimal(ChargeConstants.CHARGE_AMOUNT_COL, row,
+                      charge.getAmount());
+      writeString(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, row,
+                  charge.getChargeCalculationType().getValue());
+      writeString(ChargeConstants.CHARGE_TIME_TYPE_COL, row,
+                  charge.getChargeTimeType().getValue());
+      rowIndex++;
     }
+  }
 
-    @Override
-    public void populate(final Workbook workbook, String dateFormat) {
-        int rowIndex = 1;
-        Sheet chargeSheet = workbook.createSheet(TemplatePopulateImportConstants.CHARGE_SHEET_NAME);
-        setLayout(chargeSheet);
+  private void setLayout(Sheet worksheet) {
+    worksheet.setColumnWidth(ID_COL,
+                             TemplatePopulateImportConstants.SMALL_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_NAME_COL,
+                             TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_AMOUNT_COL,
+                             TemplatePopulateImportConstants.SMALL_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_CALCULATION_TYPE_COL,
+                             TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+    worksheet.setColumnWidth(ChargeConstants.CHARGE_TIME_TYPE_COL,
+                             TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
 
-        populateCharges(chargeSheet, rowIndex);
-        chargeSheet.protectSheet("");
-    }
+    Row rowHeader =
+        worksheet.createRow(TemplatePopulateImportConstants.ROWHEADER_INDEX);
+    rowHeader.setHeight(TemplatePopulateImportConstants.ROW_HEADER_HEIGHT);
 
-    private void populateCharges(Sheet chargeSheet, int rowIndex) {
-        for (ChargeData charge : charges) {
-            Row row = chargeSheet.createRow(rowIndex);
-            writeLong(ID_COL, row, charge.getId());
-            writeString(ChargeConstants.CHARGE_NAME_COL, row, charge.getName().trim().replaceAll("[ )(]", "_"));
-            writeBigDecimal(ChargeConstants.CHARGE_AMOUNT_COL, row, charge.getAmount());
-            writeString(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, row, charge.getChargeCalculationType().getValue());
-            writeString(ChargeConstants.CHARGE_TIME_TYPE_COL, row, charge.getChargeTimeType().getValue());
-            rowIndex++;
-        }
-    }
+    writeString(ID_COL, rowHeader, "ID");
+    writeString(ChargeConstants.CHARGE_NAME_COL, rowHeader, "Name");
+    writeString(ChargeConstants.CHARGE_AMOUNT_COL, rowHeader, "Charge Amount");
+    writeString(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, rowHeader,
+                "Charge Calculation Type");
+    writeString(ChargeConstants.CHARGE_TIME_TYPE_COL, rowHeader,
+                "Charge Time Type");
+  }
 
-    private void setLayout(Sheet worksheet) {
-        worksheet.setColumnWidth(ID_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_NAME_COL, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_AMOUNT_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
-        worksheet.setColumnWidth(ChargeConstants.CHARGE_TIME_TYPE_COL, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
+  public Integer getChargesSize() { return charges.size(); }
 
-        Row rowHeader = worksheet.createRow(TemplatePopulateImportConstants.ROWHEADER_INDEX);
-        rowHeader.setHeight(TemplatePopulateImportConstants.ROW_HEADER_HEIGHT);
-
-        writeString(ID_COL, rowHeader, "ID");
-        writeString(ChargeConstants.CHARGE_NAME_COL, rowHeader, "Name");
-        writeString(ChargeConstants.CHARGE_AMOUNT_COL, rowHeader, "Charge Amount");
-        writeString(ChargeConstants.CHARGE_CALCULATION_TYPE_COL, rowHeader, "Charge Calculation Type");
-        writeString(ChargeConstants.CHARGE_TIME_TYPE_COL, rowHeader, "Charge Time Type");
-    }
-
-    public Integer getChargesSize() {
-        return charges.size();
-    }
-
-    public List<ChargeData> getCharges() {
-        return charges;
-    }
-
+  public List<ChargeData> getCharges() { return charges; }
 }
