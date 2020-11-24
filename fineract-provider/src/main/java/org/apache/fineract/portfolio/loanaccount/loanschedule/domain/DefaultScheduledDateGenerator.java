@@ -100,7 +100,17 @@ public class DefaultScheduledDateGenerator implements ScheduledDateGenerator {
                     }
                 } else if (dueRepaymentPeriodDate.getDayOfMonth() > loanApplicationTerms.getFirstDateForSemi().getDayOfMonth()
                         && dueRepaymentPeriodDate.getDayOfMonth() < loanApplicationTerms.getSecondDateForSemi().getDayOfMonth()) {
-                    dueRepaymentPeriodDate = dueRepaymentPeriodDate.minusDays(2);
+                    //
+                    int some = dueRepaymentPeriodDate.getDayOfMonth();
+                    int other = loanApplicationTerms.getFirstDateForSemi().getDayOfMonth();
+                    // diff
+                    int then = some - other;
+                    //
+                    if (then == 1) {
+                        dueRepaymentPeriodDate = dueRepaymentPeriodDate.minusDays(1);
+                    } else {
+                        dueRepaymentPeriodDate = dueRepaymentPeriodDate.minusDays(2);
+                    }
                 }
 
             } else {
