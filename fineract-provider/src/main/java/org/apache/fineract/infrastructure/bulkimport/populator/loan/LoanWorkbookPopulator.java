@@ -352,10 +352,10 @@ public class LoanWorkbookPopulator extends AbstractWorkbookPopulator {
         worksheet.setColumnWidth(LoanConstants.GROUP_ID, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
         worksheet.setColumnWidth(LoanConstants.LINK_ACCOUNT_ID, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
 
-        writeString(LoanConstants.OFFICE_NAME_COL, rowHeader, "Office Name*");
+        writeString(LoanConstants.OFFICE_NAME_COL, rowHeader, "Affiliation*");
         writeString(LoanConstants.LOAN_TYPE_COL, rowHeader, "Loan Type*");
-        writeString(LoanConstants.CLIENT_NAME_COL, rowHeader, "Client/Group Name*");
-        writeString(LoanConstants.CLIENT_EXTERNAL_ID, rowHeader, "Client ExternalID");
+        writeString(LoanConstants.CLIENT_NAME_COL, rowHeader, "Customer/Group Name*");
+        writeString(LoanConstants.CLIENT_EXTERNAL_ID, rowHeader, "Customer ExternalID");
         writeString(LoanConstants.PRODUCT_COL, rowHeader, "Product*");
         writeString(LoanConstants.LOAN_OFFICER_NAME_COL, rowHeader, "Loan Officer*");
         writeString(LoanConstants.SUBMITTED_ON_DATE_COL, rowHeader, "Submitted On*");
@@ -381,9 +381,9 @@ public class LoanWorkbookPopulator extends AbstractWorkbookPopulator {
         writeString(LoanConstants.TOTAL_AMOUNT_REPAID_COL, rowHeader, "Amount Repaid");
         writeString(LoanConstants.LAST_REPAYMENT_DATE_COL, rowHeader, "Date-Last Repayment");
         writeString(LoanConstants.REPAYMENT_TYPE_COL, rowHeader, "Repayment Type");
-        writeString(LoanConstants.LOOKUP_CLIENT_NAME_COL, rowHeader, "Client Name");
-        writeString(LoanConstants.LOOKUP_CLIENT_EXTERNAL_ID, rowHeader, "Lookup Client ExternalID");
-        writeString(LoanConstants.LOOKUP_ACTIVATION_DATE_COL, rowHeader, "Client Activation Date");
+        writeString(LoanConstants.LOOKUP_CLIENT_NAME_COL, rowHeader, "Customer Name");
+        writeString(LoanConstants.LOOKUP_CLIENT_EXTERNAL_ID, rowHeader, "Lookup Customer External ID");
+        writeString(LoanConstants.LOOKUP_ACTIVATION_DATE_COL, rowHeader, "Customer Activation Date");
         writeString(LoanConstants.EXTERNAL_ID_COL, rowHeader, "External Id");
         writeString(LoanConstants.CHARGE_NAME_1, rowHeader, "Charge Name*");
         writeString(LoanConstants.CHARGE_AMOUNT_1, rowHeader, "Charged Amount");

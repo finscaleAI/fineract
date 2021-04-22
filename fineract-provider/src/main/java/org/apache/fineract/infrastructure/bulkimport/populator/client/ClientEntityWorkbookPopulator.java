@@ -184,13 +184,13 @@ public class ClientEntityWorkbookPopulator extends AbstractWorkbookPopulator {
         worksheet.setColumnWidth(ClientEntityConstants.LOOKUP_COUNTRY, TemplatePopulateImportConstants.SMALL_COL_SIZE);
         worksheet.setColumnWidth(ClientEntityConstants.LOOKUP_MAIN_BUSINESS_LINE, TemplatePopulateImportConstants.MEDIUM_COL_SIZE);
         writeString(ClientEntityConstants.NAME_COL, rowHeader, "Name");
-        writeString(ClientEntityConstants.OFFICE_NAME_COL, rowHeader, "Office Name*");
+        writeString(ClientEntityConstants.OFFICE_NAME_COL, rowHeader, "Affiliation*");
         writeString(ClientEntityConstants.STAFF_NAME_COL, rowHeader, "Staff Name");
         writeString(ClientEntityConstants.INCOPORATION_DATE_COL, rowHeader, "Incorporation Date");
         writeString(ClientEntityConstants.INCOPORATION_VALID_TILL_COL, rowHeader, "Incorporation Validity Till Date");
         writeString(ClientEntityConstants.MOBILE_NO_COL, rowHeader, "Mobile number");
-        writeString(ClientEntityConstants.CLIENT_TYPE_COL, rowHeader, "Client Type ");
-        writeString(ClientEntityConstants.CLIENT_CLASSIFICATION_COL, rowHeader, "Client Classification ");
+        writeString(ClientEntityConstants.CLIENT_TYPE_COL, rowHeader, "Customer Type ");
+        writeString(ClientEntityConstants.CLIENT_CLASSIFICATION_COL, rowHeader, "Customer Classification ");
         writeString(ClientEntityConstants.INCOPORATION_NUMBER_COL, rowHeader, "Incorporation Number");
         writeString(ClientEntityConstants.MAIN_BUSINESS_LINE, rowHeader, "Main Business Line");
         writeString(ClientEntityConstants.CONSTITUTION_COL, rowHeader, "Constitution");
@@ -212,11 +212,11 @@ public class ClientEntityWorkbookPopulator extends AbstractWorkbookPopulator {
         writeString(ClientEntityConstants.IS_ACTIVE_ADDRESS_COL, rowHeader, "Is active Address ? ");
         writeString(ClientEntityConstants.WARNING_COL, rowHeader, "All * marked fields are compulsory.");
 
-        writeString(ClientEntityConstants.RELATIONAL_OFFICE_NAME_COL, rowHeader, "Lookup office Name  ");
-        writeString(ClientEntityConstants.RELATIONAL_OFFICE_OPENING_DATE_COL, rowHeader, "Lookup Office Opened Date ");
+        writeString(ClientEntityConstants.RELATIONAL_OFFICE_NAME_COL, rowHeader, "Lookup Affiliation  ");
+        writeString(ClientEntityConstants.RELATIONAL_OFFICE_OPENING_DATE_COL, rowHeader, "Lookup Affiliation Opened Date ");
         writeString(ClientEntityConstants.LOOKUP_CONSTITUTION_COL, rowHeader, "Lookup Constitution ");
-        writeString(ClientEntityConstants.LOOKUP_CLIENT_TYPES, rowHeader, "Lookup Client Types ");
-        writeString(ClientEntityConstants.LOOKUP_CLIENT_CLASSIFICATION, rowHeader, "Lookup Client Classification ");
+        writeString(ClientEntityConstants.LOOKUP_CLIENT_TYPES, rowHeader, "Lookup Customer Types ");
+        writeString(ClientEntityConstants.LOOKUP_CLIENT_CLASSIFICATION, rowHeader, "Lookup Customer Classification ");
         writeString(ClientEntityConstants.LOOKUP_ADDRESS_TYPE, rowHeader, "Lookup AddressType ");
         writeString(ClientEntityConstants.LOOKUP_STATE_PROVINCE, rowHeader, "Lookup State/Province ");
         writeString(ClientEntityConstants.LOOKUP_COUNTRY, rowHeader, "Lookup Country ");
