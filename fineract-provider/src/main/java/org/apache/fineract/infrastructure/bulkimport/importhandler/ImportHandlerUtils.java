@@ -348,7 +348,7 @@ public final class ImportHandlerUtils {
         String sheetName = sheet.getSheetName();
         String chargeTimeType = "";
         EnumOptionData chargeTimeTypeEnum = null;
-        sheetName.equals(TemplatePopulateImportConstants.CHARGE_SHEET_NAME);
+        // sheetName.equals(TemplatePopulateImportConstants.CHARGE_SHEET_NAME);
         {
             for (Row row : sheet) {
                 for (Cell cell : row) {
@@ -389,7 +389,8 @@ public final class ImportHandlerUtils {
 
     public static String getCodeByName(Sheet sheet, String name) {
         String sheetName = sheet.getSheetName();
-        if (sheetName.equals(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME)) {
+        // sheetName.equals(TemplatePopulateImportConstants.EXTRAS_SHEET_NAME);
+        {
             for (Row row : sheet) {
                 for (Cell cell : row) {
                     if (name != null) {
