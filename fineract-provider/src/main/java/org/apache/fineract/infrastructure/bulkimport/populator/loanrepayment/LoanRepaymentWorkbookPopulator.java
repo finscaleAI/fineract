@@ -282,9 +282,9 @@ public class LoanRepaymentWorkbookPopulator extends AbstractWorkbookPopulator {
         worksheet.setColumnWidth(LoanRepaymentConstants.LOOKUP_TOTAL_OUTSTANDING_AMOUNT_COL,
                 TemplatePopulateImportConstants.LARGE_COL_SIZE);
         worksheet.setColumnWidth(LoanRepaymentConstants.LOOKUP_LOAN_DISBURSEMENT_DATE_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
-        writeString(LoanRepaymentConstants.OFFICE_NAME_COL, rowHeader, "Office Name*");
-        writeString(LoanRepaymentConstants.CLIENT_NAME_COL, rowHeader, "Client Name*");
-        writeString(LoanRepaymentConstants.CLIENT_EXTERNAL_ID, rowHeader, "Client Ext.Id");
+        writeString(LoanRepaymentConstants.OFFICE_NAME_COL, rowHeader, "Affiliation*");
+        writeString(LoanRepaymentConstants.CLIENT_NAME_COL, rowHeader, "Customer Name*");
+        writeString(LoanRepaymentConstants.CLIENT_EXTERNAL_ID, rowHeader, "Customer Ext.Id");
         writeString(LoanRepaymentConstants.LOAN_ACCOUNT_NO_COL, rowHeader, "Loan Account No.*");
         writeString(LoanRepaymentConstants.PRODUCT_COL, rowHeader, "Product Name");
         writeString(LoanRepaymentConstants.PRINCIPAL_COL, rowHeader, "Principal");
@@ -298,8 +298,8 @@ public class LoanRepaymentWorkbookPopulator extends AbstractWorkbookPopulator {
         writeString(LoanRepaymentConstants.RECEIPT_NO_COL, rowHeader, "Receipt No");
         writeString(LoanRepaymentConstants.ROUTING_CODE_COL, rowHeader, "Routing Code");
         writeString(LoanRepaymentConstants.BANK_NO_COL, rowHeader, "Bank No");
-        writeString(LoanRepaymentConstants.LOOKUP_CLIENT_NAME_COL, rowHeader, "Lookup Client");
-        writeString(LoanRepaymentConstants.LOOKUP_CLIENT_EXTERNAL_ID, rowHeader, "Lookup ClientExtId");
+        writeString(LoanRepaymentConstants.LOOKUP_CLIENT_NAME_COL, rowHeader, "Lookup Customer");
+        writeString(LoanRepaymentConstants.LOOKUP_CLIENT_EXTERNAL_ID, rowHeader, "Lookup Customer ExtId");
         writeString(LoanRepaymentConstants.LOOKUP_ACCOUNT_NO_COL, rowHeader, "Lookup Account");
         writeString(LoanRepaymentConstants.LOOKUP_PRODUCT_COL, rowHeader, "Lookup Product");
         writeString(LoanRepaymentConstants.LOOKUP_PRINCIPAL_COL, rowHeader, "Lookup Principal");

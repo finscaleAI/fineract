@@ -172,7 +172,7 @@ public class ClientPersonWorkbookPopulator extends AbstractWorkbookPopulator {
         worksheet.setColumnWidth(ClientPersonConstants.LOOKUP_ADDRESS_TYPE_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
         worksheet.setColumnWidth(ClientPersonConstants.LOOKUP_STATE_PROVINCE_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
         worksheet.setColumnWidth(ClientPersonConstants.LOOKUP_COUNTRY_COL, TemplatePopulateImportConstants.SMALL_COL_SIZE);
-        writeString(ClientPersonConstants.OFFICE_NAME_COL, rowHeader, "Office Name*");
+        writeString(ClientPersonConstants.OFFICE_NAME_COL, rowHeader, "Affiliation*");
         writeString(ClientPersonConstants.STAFF_NAME_COL, rowHeader, "Staff Name");
         writeString(ClientPersonConstants.EXTERNAL_ID_COL, rowHeader, "External ID ");
         writeString(ClientPersonConstants.SUBMITTED_ON_COL, rowHeader, "Submitted On Date");
@@ -180,11 +180,11 @@ public class ClientPersonWorkbookPopulator extends AbstractWorkbookPopulator {
         writeString(ClientPersonConstants.ACTIVE_COL, rowHeader, "Active*");
         writeString(ClientPersonConstants.MOBILE_NO_COL, rowHeader, "Mobile number");
         writeString(ClientPersonConstants.DOB_COL, rowHeader, "Date of Birth ");
-        writeString(ClientPersonConstants.CLIENT_TYPE_COL, rowHeader, "Client Type ");
+        writeString(ClientPersonConstants.CLIENT_TYPE_COL, rowHeader, "Customer Type ");
         writeString(ClientPersonConstants.IS_STAFF_COL, rowHeader, "Is a staff memeber ");
         writeString(ClientPersonConstants.GENDER_COL, rowHeader, "Gender ");
         writeString(ClientPersonConstants.ADDRESS_ENABLED_COL, rowHeader, "Address Enabled *");
-        writeString(ClientPersonConstants.CLIENT_CLASSIFICATION_COL, rowHeader, "Client Classification ");
+        writeString(ClientPersonConstants.CLIENT_CLASSIFICATION_COL, rowHeader, "Customer Classification ");
         writeString(ClientPersonConstants.ADDRESS_TYPE_COL, rowHeader, "Address Type ");
         writeString(ClientPersonConstants.STREET_COL, rowHeader, "Street  ");
         writeString(ClientPersonConstants.ADDRESS_LINE_1_COL, rowHeader, "Address Line 1");
@@ -197,11 +197,11 @@ public class ClientPersonWorkbookPopulator extends AbstractWorkbookPopulator {
         writeString(ClientPersonConstants.IS_ACTIVE_ADDRESS_COL, rowHeader, "Is active Address ? ");
         writeString(ClientPersonConstants.WARNING_COL, rowHeader, "All * marked fields are compulsory.");
 
-        writeString(ClientPersonConstants.RELATIONAL_OFFICE_NAME_COL, rowHeader, "Lookup office Name  ");
+        writeString(ClientPersonConstants.RELATIONAL_OFFICE_NAME_COL, rowHeader, "Lookup Affiliation  ");
         writeString(ClientPersonConstants.RELATIONAL_OFFICE_OPENING_DATE_COL, rowHeader, "Lookup Office Opened Date ");
         writeString(ClientPersonConstants.LOOKUP_GENDER_COL, rowHeader, "Lookup Gender ");
-        writeString(ClientPersonConstants.LOOKUP_CLIENT_TYPES_COL, rowHeader, "Lookup Client Types ");
-        writeString(ClientPersonConstants.LOOKUP_CLIENT_CLASSIFICATION_COL, rowHeader, "Lookup Client Classification ");
+        writeString(ClientPersonConstants.LOOKUP_CLIENT_TYPES_COL, rowHeader, "Lookup Customer Types ");
+        writeString(ClientPersonConstants.LOOKUP_CLIENT_CLASSIFICATION_COL, rowHeader, "Lookup Customer Classification ");
         writeString(ClientPersonConstants.LOOKUP_ADDRESS_TYPE_COL, rowHeader, "Lookup AddressType ");
         writeString(ClientPersonConstants.LOOKUP_STATE_PROVINCE_COL, rowHeader, "Lookup State/Province ");
         writeString(ClientPersonConstants.LOOKUP_COUNTRY_COL, rowHeader, "Lookup Country ");
