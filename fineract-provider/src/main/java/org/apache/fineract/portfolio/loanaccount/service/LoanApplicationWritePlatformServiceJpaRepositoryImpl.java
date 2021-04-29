@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -1422,6 +1423,16 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     throw new GeneralPlatformDomainRuleException("error.msg.loan.amount.less.than.outstanding.of.loan.to.be.closed",
                             "Topup loan amount should be greater than outstanding amount of loan to be closed.");
                 }
+            }
+
+            BigDecimal netDisbursalAmount = loan.getApprovedPrincipal();
+            final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                    .collect(Collectors.toSet());
+            for (LoanCharge charge : chargesAtDisbursal) {
+                netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+            }
+            if (netDisbursalAmount != null) {
+                loan.setNetDisbursalAmount(netDisbursalAmount);
             }
 
             saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
