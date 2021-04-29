@@ -36,7 +36,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
@@ -509,7 +508,8 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         BigDecimal netDisbursalAmount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.principalDisbursedParameterName);
         final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
                 .collect(Collectors.toSet());
-        for (LoanCharge charge : chargesAtDisbursal) { netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+        for (LoanCharge charge : chargesAtDisbursal) {
+            netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
         }
         if (netDisbursalAmount != null) {
             loan.setNetDisbursalAmount(netDisbursalAmount);
