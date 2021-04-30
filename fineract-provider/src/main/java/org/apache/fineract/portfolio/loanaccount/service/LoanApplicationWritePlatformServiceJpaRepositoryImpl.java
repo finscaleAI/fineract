@@ -1393,13 +1393,15 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         if (!changes.isEmpty()) {
 
             BigDecimal netDisbursalAmount = loan.getApprovedPrincipal();
-            final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
-                    .collect(Collectors.toSet());
-            for (LoanCharge charge : chargesAtDisbursal) {
-                netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
-            }
-            if (netDisbursalAmount != null) {
-                loan.setNetDisbursalAmount(netDisbursalAmount);
+            if (loan.getLoanCharges() != null) {
+                final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                        .collect(Collectors.toSet());
+                for (LoanCharge charge : chargesAtDisbursal) {
+                    netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                }
+                if (netDisbursalAmount != null) {
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
             }
 
             // If loan approved amount less than loan demanded amount, then need

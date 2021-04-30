@@ -506,23 +506,25 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
         }
 
-        final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
-                .collect(Collectors.toSet());
-        if (!loan.isTopup()) {
-            BigDecimal netDisbursalAmount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.principalDisbursedParameterName);
-            if (netDisbursalAmount != null) {
-                for (LoanCharge charge : chargesAtDisbursal) {
-                    netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+        if (loan.getLoanCharges() != null) {
+            final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                    .collect(Collectors.toSet());
+            if (!loan.isTopup()) {
+                BigDecimal netDisbursalAmount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.principalDisbursedParameterName);
+                if (netDisbursalAmount != null) {
+                    for (LoanCharge charge : chargesAtDisbursal) {
+                        netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                    }
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
                 }
-                loan.setNetDisbursalAmount(netDisbursalAmount);
-            }
-        } else if (loan.isTopup() && !amountToDisburse.equals(null)) {
-            BigDecimal netDisbursalAmount = amountToDisburse.getAmount();
-            if (netDisbursalAmount != null) {
-                for (LoanCharge charge : chargesAtDisbursal) {
-                    netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+            } else if (loan.isTopup() && !amountToDisburse.equals(null)) {
+                BigDecimal netDisbursalAmount = amountToDisburse.getAmount();
+                if (netDisbursalAmount != null) {
+                    for (LoanCharge charge : chargesAtDisbursal) {
+                        netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                    }
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
                 }
-                loan.setNetDisbursalAmount(netDisbursalAmount);
             }
         }
 
