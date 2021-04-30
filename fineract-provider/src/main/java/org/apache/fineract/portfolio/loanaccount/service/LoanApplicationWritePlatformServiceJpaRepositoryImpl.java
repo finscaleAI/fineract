@@ -1506,8 +1506,6 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         BigDecimal netDisbursalAmount = loan.getProposedPrincipal();
         checkClientOrGroupActive(loan);
 
-        System.out.println(loan.getProposedPrincipal());
-
         final Map<String, Object> changes = loan.undoApproval(defaultLoanLifecycleStateMachine());
         if (!changes.isEmpty()) {
             // If loan approved amount is not same as loan amount demanded, then
@@ -1524,11 +1522,9 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
                         .collect(Collectors.toSet());
                 for (LoanCharge charge : chargesAtDisbursal) {
-                    System.out.println(charge.getCharge().getAmount());
                     netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
                 }
                 if (netDisbursalAmount != null) {
-                    System.out.println(netDisbursalAmount);
                     loan.setNetDisbursalAmount(netDisbursalAmount);
                 }
             } else {
