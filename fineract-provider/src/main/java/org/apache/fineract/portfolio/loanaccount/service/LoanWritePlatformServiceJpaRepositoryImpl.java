@@ -815,6 +815,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         final AppUser currentUser = getAppUserIfPresent();
         final Loan loan = this.loanAssembler.assembleFrom(loanId);
+        BigDecimal netDisbursalAmount = loan.getApprovedPrincipal();
         checkClientOrGroupActive(loan);
         this.businessEventNotifierService.notifyBusinessEventToBeExecuted(BusinessEvents.LOAN_UNDO_DISBURSAL,
                 constructEntityMap(BusinessEntity.LOAN, loan));
@@ -833,6 +834,18 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 currentUser);
 
         if (!changes.isEmpty()) {
+            if (loan.getLoanCharges() != null) {
+                final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                        .collect(Collectors.toSet());
+                if (netDisbursalAmount != null) {
+                    for (LoanCharge charge : chargesAtDisbursal) {
+                        netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                    }
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            } else {
+                loan.setNetDisbursalAmount(netDisbursalAmount);
+            }
             saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
             this.accountTransfersWritePlatformService.reverseAllTransactions(loanId, PortfolioAccountType.LOAN);
             String noteText = null;

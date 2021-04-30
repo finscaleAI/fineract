@@ -1503,11 +1503,13 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         this.fromApiJsonDeserializer.validateForUndo(command.json());
 
         final Loan loan = retrieveLoanBy(loanId);
+        BigDecimal netDisbursalAmount = loan.getProposedPrincipal();
         checkClientOrGroupActive(loan);
+
+        System.out.println(loan.getProposedPrincipal());
 
         final Map<String, Object> changes = loan.undoApproval(defaultLoanLifecycleStateMachine());
         if (!changes.isEmpty()) {
-
             // If loan approved amount is not same as loan amount demanded, then
             // during undo, restore the demand amount to principal amount.
 
@@ -1516,6 +1518,21 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 LocalDate recalculateFrom = null;
                 ScheduleGeneratorDTO scheduleGeneratorDTO = this.loanUtilService.buildScheduleGeneratorDTO(loan, recalculateFrom);
                 loan.regenerateRepaymentSchedule(scheduleGeneratorDTO, currentUser);
+            }
+
+            if (loan.getLoanCharges() != null) {
+                final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                        .collect(Collectors.toSet());
+                for (LoanCharge charge : chargesAtDisbursal) {
+                    System.out.println(charge.getCharge().getAmount());
+                    netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                }
+                if (netDisbursalAmount != null) {
+                    System.out.println(netDisbursalAmount);
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            } else {
+                loan.setNetDisbursalAmount(netDisbursalAmount);
             }
 
             saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
