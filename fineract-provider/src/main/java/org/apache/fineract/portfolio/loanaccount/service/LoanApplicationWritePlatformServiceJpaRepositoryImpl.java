@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import javax.persistence.PersistenceException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -1391,6 +1392,18 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
 
         if (!changes.isEmpty()) {
 
+            BigDecimal netDisbursalAmount = loan.getApprovedPrincipal();
+            if (loan.getLoanCharges() != null) {
+                final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                        .collect(Collectors.toSet());
+                for (LoanCharge charge : chargesAtDisbursal) {
+                    netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                }
+                if (netDisbursalAmount != null) {
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            }
+
             // If loan approved amount less than loan demanded amount, then need
             // to recompute the schedule
             if (changes.containsKey(LoanApiConstants.approvedLoanAmountParameterName) || changes.containsKey("recalculateLoanSchedule")
@@ -1422,6 +1435,8 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                     throw new GeneralPlatformDomainRuleException("error.msg.loan.amount.less.than.outstanding.of.loan.to.be.closed",
                             "Topup loan amount should be greater than outstanding amount of loan to be closed.");
                 }
+                netDisbursalAmount = netDisbursalAmount.subtract(loanOutstanding);
+                loan.setNetDisbursalAmount(netDisbursalAmount);
             }
 
             saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
@@ -1488,11 +1503,11 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
         this.fromApiJsonDeserializer.validateForUndo(command.json());
 
         final Loan loan = retrieveLoanBy(loanId);
+        BigDecimal netDisbursalAmount = loan.getProposedPrincipal();
         checkClientOrGroupActive(loan);
 
         final Map<String, Object> changes = loan.undoApproval(defaultLoanLifecycleStateMachine());
         if (!changes.isEmpty()) {
-
             // If loan approved amount is not same as loan amount demanded, then
             // during undo, restore the demand amount to principal amount.
 
@@ -1501,6 +1516,19 @@ public class LoanApplicationWritePlatformServiceJpaRepositoryImpl implements Loa
                 LocalDate recalculateFrom = null;
                 ScheduleGeneratorDTO scheduleGeneratorDTO = this.loanUtilService.buildScheduleGeneratorDTO(loan, recalculateFrom);
                 loan.regenerateRepaymentSchedule(scheduleGeneratorDTO, currentUser);
+            }
+
+            if (loan.getLoanCharges() != null) {
+                final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                        .collect(Collectors.toSet());
+                for (LoanCharge charge : chargesAtDisbursal) {
+                    netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                }
+                if (netDisbursalAmount != null) {
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            } else {
+                loan.setNetDisbursalAmount(netDisbursalAmount);
             }
 
             saveAndFlushLoanWithDataIntegrityViolationChecks(loan);

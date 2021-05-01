@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.fineract.accounting.journalentry.service.JournalEntryWritePlatformService;
 import org.apache.fineract.infrastructure.codes.domain.CodeValue;
@@ -399,16 +400,10 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
         loan.validateAccountStatus(LoanEvent.LOAN_DISBURSED);
         boolean canDisburse = loan.canDisburse(actualDisbursementDate);
         ChangedTransactionDetail changedTransactionDetail = null;
+        Money amountToDisburse = null;
         if (canDisburse) {
-
-            // Get netDisbursalAmount from disbursal screen field.
-            final BigDecimal netDisbursalAmount = command
-                    .bigDecimalValueOfParameterNamed(LoanApiConstants.disbursementNetDisbursalAmountParameterName);
-            if (netDisbursalAmount != null) {
-                loan.setNetDisbursalAmount(netDisbursalAmount);
-            }
             Money disburseAmount = loan.adjustDisburseAmount(command, actualDisbursementDate);
-            Money amountToDisburse = disburseAmount.copy();
+            amountToDisburse = disburseAmount.copy();
             boolean recalculateSchedule = amountBeforeAdjust.isNotEqualTo(loan.getPrincpal());
             final String txnExternalId = command.stringValueOfParameterNamedAllowingNull("externalId");
 
@@ -509,6 +504,28 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                     AccountTransferType.CHARGE_PAYMENT.getValue(), null, null, null, null, null, fromSavingsAccount, isRegularTransaction,
                     isExceptionForBalanceCheck);
             this.accountTransfersWritePlatformService.transferFunds(accountTransferDTO);
+        }
+
+        if (loan.getLoanCharges() != null) {
+            final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                    .collect(Collectors.toSet());
+            if (!loan.isTopup()) {
+                BigDecimal netDisbursalAmount = command.bigDecimalValueOfParameterNamed(LoanApiConstants.principalDisbursedParameterName);
+                if (netDisbursalAmount != null) {
+                    for (LoanCharge charge : chargesAtDisbursal) {
+                        netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                    }
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            } else if (loan.isTopup() && !amountToDisburse.equals(null)) {
+                BigDecimal netDisbursalAmount = amountToDisburse.getAmount();
+                if (netDisbursalAmount != null) {
+                    for (LoanCharge charge : chargesAtDisbursal) {
+                        netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                    }
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            }
         }
 
         updateRecurringCalendarDatesForInterestRecalculation(loan);
@@ -798,6 +815,7 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
 
         final AppUser currentUser = getAppUserIfPresent();
         final Loan loan = this.loanAssembler.assembleFrom(loanId);
+        BigDecimal netDisbursalAmount = loan.getApprovedPrincipal();
         checkClientOrGroupActive(loan);
         this.businessEventNotifierService.notifyBusinessEventToBeExecuted(BusinessEvents.LOAN_UNDO_DISBURSAL,
                 constructEntityMap(BusinessEntity.LOAN, loan));
@@ -816,6 +834,18 @@ public class LoanWritePlatformServiceJpaRepositoryImpl implements LoanWritePlatf
                 currentUser);
 
         if (!changes.isEmpty()) {
+            if (loan.getLoanCharges() != null) {
+                final Set<LoanCharge> chargesAtDisbursal = loan.getLoanCharges().stream().filter(charge -> charge.isDueAtDisbursement())
+                        .collect(Collectors.toSet());
+                if (netDisbursalAmount != null) {
+                    for (LoanCharge charge : chargesAtDisbursal) {
+                        netDisbursalAmount = netDisbursalAmount.subtract(charge.amount());
+                    }
+                    loan.setNetDisbursalAmount(netDisbursalAmount);
+                }
+            } else {
+                loan.setNetDisbursalAmount(netDisbursalAmount);
+            }
             saveAndFlushLoanWithDataIntegrityViolationChecks(loan);
             this.accountTransfersWritePlatformService.reverseAllTransactions(loanId, PortfolioAccountType.LOAN);
             String noteText = null;
